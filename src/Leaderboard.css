@@ -1,0 +1,515 @@
+/* Leaderboard.css - Styles pour le classement avec 9 catégories */
+
+.leaderboardOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.leaderboardCard {
+  background-color: var(--card-bg, #2a2a2a);
+  border-radius: var(--border-radius, 12px);
+  padding: 30px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.leaderboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.leaderboardTitle {
+  font-size: 2.2rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.closeButton {
+  background-color: transparent;
+  border: 2px solid var(--text-secondary, #b0b0b0);
+  color: var(--text-secondary, #b0b0b0);
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background-color: var(--danger-color, #f44336);
+  border-color: var(--danger-color, #f44336);
+  color: white;
+  transform: rotate(90deg);
+}
+
+/* Onglets Difficulté */
+.difficultyTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 3px;
+}
+
+.difficultyTab {
+  flex: 1;
+  padding: 12px 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background-color: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary, #b0b0b0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px 8px 0 0;
+}
+
+.difficultyTab:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.difficultyTab.active {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.difficultyTab.easy.active {
+  border-bottom-color: #4CAF50;
+  color: #4CAF50;
+}
+
+.difficultyTab.medium.active {
+  border-bottom-color: #FF9800;
+  color: #FF9800;
+}
+
+.difficultyTab.hard.active {
+  border-bottom-color: #f44336;
+  color: #f44336;
+}
+
+/* Onglets Mode */
+.modeTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.modeTab {
+  flex: 1;
+  padding: 10px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: var(--text-secondary, #b0b0b0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modeTab:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.modeTab.active {
+  background-color: var(--primary-color, #4CAF50);
+  border-color: var(--primary-color, #4CAF50);
+  color: white;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+/* Indicateur catégorie actuelle */
+.currentCategory {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
+  border-radius: 10px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.categoryBadge {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  padding: 5px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.categorySeparator {
+  font-size: 1.2rem;
+  color: var(--text-secondary, #b0b0b0);
+  font-weight: bold;
+}
+
+/* Container des scores */
+.scoresContainer {
+  min-height: 400px;
+  margin-bottom: 20px;
+}
+
+.loadingScores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 1.2rem;
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.noScores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 30px;
+}
+
+.noScoresEmoji {
+  font-size: 5rem;
+  margin-bottom: 15px;
+}
+
+.noScores p {
+  font-size: 1.2rem;
+  color: var(--text-secondary, #b0b0b0);
+  margin-bottom: 10px;
+}
+
+.noScoresSubtext {
+  font-size: 1rem !important;
+  color: var(--text-secondary, #b0b0b0) !important;
+  opacity: 0.7;
+}
+
+/* Liste des scores */
+.scoresList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scoreItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.scoreItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
+  border-color: var(--primary-color, #4CAF50);
+}
+
+.scoreItem.topThree {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.15));
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.scoreItem.firstPlace {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 165, 0, 0.25));
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+}
+
+.scoreRank {
+  flex-shrink: 0;
+}
+
+.rankBadge {
+  font-size: 2rem;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: center;
+  display: block;
+}
+
+.scoreInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.scorePseudo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-primary, #ffffff);
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scoreDetails {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.scoreDate {
+  white-space: nowrap;
+}
+
+.scorePoints {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.scoreValue {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-color, #4CAF50);
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #b0b0b0);
+}
+
+/* Bouton refresh */
+.refreshButton {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: var(--secondary-color, #2196F3);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius, 12px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background-color: #1976D2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .leaderboardCard {
+    padding: 25px 20px;
+  }
+
+  .leaderboardTitle {
+    font-size: 1.8rem;
+  }
+
+  .difficultyTabs,
+  .modeTabs {
+    gap: 6px;
+  }
+
+  .difficultyTab {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .modeTab {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+
+  .currentCategory {
+    padding: 10px;
+  }
+
+  .categoryBadge {
+    font-size: 0.95rem;
+    padding: 4px 10px;
+  }
+
+  .scoreItem {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .rankBadge {
+    font-size: 1.5rem;
+    min-width: 40px;
+  }
+
+  .scorePseudo {
+    font-size: 1.1rem;
+  }
+
+  .scoreValue {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboardCard {
+    padding: 20px 15px;
+    max-height: 95vh;
+  }
+
+  .leaderboardTitle {
+    font-size: 1.5rem;
+  }
+
+  .closeButton {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+
+  .difficultyTabs {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .difficultyTab {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .modeTabs {
+    gap: 5px;
+  }
+
+  .modeTab {
+    padding: 8px 5px;
+    font-size: 0.75rem;
+  }
+
+  .currentCategory {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .categorySeparator {
+    display: none;
+  }
+
+  .categoryBadge {
+    font-size: 0.9rem;
+  }
+
+  .scoreItem {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .rankBadge {
+    font-size: 1.3rem;
+    min-width: 35px;
+  }
+
+  .scorePseudo {
+    font-size: 1rem;
+  }
+
+  .scoreDetails {
+    font-size: 0.8rem;
+  }
+
+  .scoreValue {
+    font-size: 1.3rem;
+  }
+
+  .scoreLabel {
+    font-size: 0.8rem;
+  }
+
+  .refreshButton {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .noScoresEmoji {
+    font-size: 4rem;
+  }
+
+  .noScores p {
+    font-size: 1rem;
+  }
+}
+
+/* Scrollbar personnalisée */
+.leaderboardCard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboardCard::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.leaderboardCard::-webkit-scrollbar-thumb {
+  background: var(--primary-color, #4CAF50);
+  border-radius: 10px;
+}
+
+.leaderboardCard::-webkit-scrollbar-thumb:hover {
+  background: #45a049;
+}

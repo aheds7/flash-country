@@ -1,0 +1,412 @@
+/* UserProfile.css - Styles pour le profil utilisateur */
+
+.profileOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.profileCard {
+  background-color: var(--card-bg, #2a2a2a);
+  border-radius: var(--border-radius, 12px);
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+  animation: slideUp 0.4s ease;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.profileTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+}
+
+.guestWarning {
+  background-color: rgba(255, 152, 0, 0.1);
+  border: 2px solid rgba(255, 152, 0, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.guestWarning p {
+  color: var(--warning-color, #FF9800);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Tabs */
+.profileTabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.profileTab {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: var(--text-secondary, #b0b0b0);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.profileTab:hover {
+  color: var(--text-primary, #ffffff);
+}
+
+.profileTab.active {
+  color: var(--primary-color, #4CAF50);
+  border-bottom-color: var(--primary-color, #4CAF50);
+}
+
+/* Contenu */
+.profileContent {
+  min-height: 300px;
+  margin-bottom: 20px;
+}
+
+.profileLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  font-size: 1.2rem;
+  color: var(--text-secondary, #b0b0b0);
+}
+
+/* Statistiques */
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.statCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color, #4CAF50);
+  transform: translateY(-3px);
+}
+
+.statIcon {
+  font-size: 2.5rem;
+}
+
+.statInfo {
+  flex: 1;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #b0b0b0);
+  margin-bottom: 5px;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color, #4CAF50);
+}
+
+.memberSince {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.memberSince p {
+  color: var(--text-secondary, #b0b0b0);
+  font-size: 0.95rem;
+}
+
+/* Historique */
+.historyContainer {
+  width: 100%;
+}
+
+.noHistory {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+}
+
+.noHistoryEmoji {
+  font-size: 4rem;
+  margin-bottom: 15px;
+}
+
+.noHistory p {
+  font-size: 1.1rem;
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.historyItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color, #4CAF50);
+  transform: translateX(5px);
+}
+
+.historyRank {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-secondary, #b0b0b0);
+  min-width: 40px;
+  text-align: center;
+}
+
+.historyInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.historyMode {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin-bottom: 4px;
+}
+
+.historyDetails {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #b0b0b0);
+  flex-wrap: wrap;
+}
+
+.historyDifficulty,
+.historyDate {
+  white-space: nowrap;
+}
+
+.historySeparator {
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.historyScore {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color, #4CAF50);
+}
+
+/* Bouton déconnexion */
+.logoutButton {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: transparent;
+  border: 2px solid var(--danger-color, #f44336);
+  color: var(--danger-color, #f44336);
+  border-radius: var(--border-radius, 12px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logoutButton:hover {
+  background-color: var(--danger-color, #f44336);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(244, 67, 54, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profileCard {
+    padding: 30px 20px;
+  }
+
+  .profileTitle {
+    font-size: 1.6rem;
+  }
+
+  .profileTabs {
+    gap: 5px;
+  }
+
+  .profileTab {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .statsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    padding: 15px;
+  }
+
+  .statIcon {
+    font-size: 2rem;
+  }
+
+  .statValue {
+    font-size: 1.5rem;
+  }
+
+  .historyItem {
+    padding: 12px;
+  }
+
+  .historyRank {
+    font-size: 1rem;
+    min-width: 35px;
+  }
+
+  .historyMode {
+    font-size: 1rem;
+  }
+
+  .historyScore {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileCard {
+    padding: 20px 15px;
+    max-height: 95vh;
+  }
+
+  .profileTitle {
+    font-size: 1.4rem;
+  }
+
+  .guestWarning {
+    padding: 12px;
+  }
+
+  .guestWarning p {
+    font-size: 0.85rem;
+  }
+
+  .profileTab {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .statCard {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .statIcon {
+    font-size: 1.8rem;
+  }
+
+  .statLabel {
+    font-size: 0.8rem;
+  }
+
+  .statValue {
+    font-size: 1.3rem;
+  }
+
+  .historyItem {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .historyRank {
+    font-size: 0.9rem;
+    min-width: 30px;
+  }
+
+  .historyMode {
+    font-size: 0.95rem;
+  }
+
+  .historyDetails {
+    font-size: 0.75rem;
+  }
+
+  .historyScore {
+    font-size: 1.2rem;
+  }
+
+  .logoutButton {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* Scrollbar personnalisée */
+.profileCard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.profileCard::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.profileCard::-webkit-scrollbar-thumb {
+  background: var(--primary-color, #4CAF50);
+  border-radius: 10px;
+}
+
+.profileCard::-webkit-scrollbar-thumb:hover {
+  background: #45a049;
+}

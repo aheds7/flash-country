@@ -1,0 +1,336 @@
+/* AuthScreen.css - Styles pour l'authentification complète */
+
+.authContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+.authCard {
+  background-color: var(--card-bg, #2a2a2a);
+  border-radius: var(--border-radius, 12px);
+  padding: 50px 40px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.6s ease;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: transparent;
+  border: 2px solid var(--text-secondary, #b0b0b0);
+  color: var(--text-secondary, #b0b0b0);
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.backButton:hover {
+  background-color: var(--primary-color, #4CAF50);
+  border-color: var(--primary-color, #4CAF50);
+  color: white;
+}
+
+.authTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.authSubtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary, #b0b0b0);
+  text-align: center;
+  margin-bottom: 35px;
+  font-weight: 300;
+}
+
+/* Choix invité/compte */
+.authChoiceContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.authChoiceButton {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 3px solid transparent;
+  border-radius: var(--border-radius, 12px);
+  padding: 30px 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.authChoiceButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.authChoiceButton:hover::before {
+  opacity: 1;
+}
+
+.authChoiceButton:hover {
+  border-color: var(--primary-color, #4CAF50);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+}
+
+.authChoiceButton.guest:hover {
+  border-color: #FF9800;
+  box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3);
+}
+
+.authChoiceIcon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.authChoiceButton h3 {
+  font-size: 1.5rem;
+  color: var(--text-primary, #ffffff);
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.authChoiceButton p {
+  font-size: 1rem;
+  color: var(--text-secondary, #b0b0b0);
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+/* Formulaires */
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.authInput {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  border: 3px solid var(--card-bg, #2a2a2a);
+  border-radius: var(--border-radius, 12px);
+  background-color: #1a1a1a;
+  color: var(--text-primary, #ffffff);
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.authInput:focus {
+  border-color: var(--primary-color, #4CAF50);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.authInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.authInput::placeholder {
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.authButton {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: var(--primary-color, #4CAF50);
+  color: var(--text-primary, #ffffff);
+  border: none;
+  border-radius: var(--border-radius, 12px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+  margin-top: 5px;
+}
+
+.authButton:hover:not(:disabled) {
+  background-color: #45a049;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+}
+
+.authButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.authError {
+  color: var(--danger-color, #f44336);
+  font-size: 0.95rem;
+  text-align: center;
+  margin: -5px 0 0 0;
+  animation: shake 0.5s ease;
+  padding: 10px;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 8px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.authFooterText {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #b0b0b0);
+  text-align: center;
+  margin-top: 25px;
+  line-height: 1.6;
+}
+
+.authLink {
+  background: none;
+  border: none;
+  color: var(--primary-color, #4CAF50);
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.authLink:hover {
+  color: #45a049;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .authCard {
+    padding: 40px 30px;
+  }
+
+  .authTitle {
+    font-size: 2rem;
+  }
+
+  .authSubtitle {
+    font-size: 1rem;
+  }
+
+  .authChoiceButton {
+    padding: 25px 20px;
+  }
+
+  .authChoiceIcon {
+    font-size: 2.5rem;
+  }
+
+  .authChoiceButton h3 {
+    font-size: 1.3rem;
+  }
+
+  .authInput,
+  .authButton {
+    font-size: 1rem;
+    padding: 14px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .authCard {
+    padding: 30px 20px;
+  }
+
+  .backButton {
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .authTitle {
+    font-size: 1.8rem;
+    margin-top: 25px;
+  }
+
+  .authSubtitle {
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+  }
+
+  .authChoiceContainer {
+    gap: 15px;
+  }
+
+  .authChoiceButton {
+    padding: 20px 15px;
+  }
+
+  .authChoiceIcon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .authChoiceButton h3 {
+    font-size: 1.2rem;
+  }
+
+  .authChoiceButton p {
+    font-size: 0.9rem;
+  }
+
+  .authForm {
+    gap: 15px;
+  }
+
+  .authInput,
+  .authButton {
+    font-size: 0.95rem;
+    padding: 13px 16px;
+  }
+
+  .authFooterText {
+    font-size: 0.85rem;
+    margin-top: 20px;
+  }
+}
