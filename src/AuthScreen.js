@@ -151,6 +151,17 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
               <p>{translations[currentLang].accountDesc || 'Garde ta progression et tes scores'}</p>
             </button>
           </div>
+         <p style={{marginTop: '30px', fontSize: '11px', opacity: 0.5, textAlign: 'center'}}>
+            En utilisant ce site, vous acceptez notre{' '}
+            <a 
+              href="https://www.iubenda.com/privacy-policy/generator" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{color: '#4CAF50', textDecoration: 'underline'}}
+            >
+              Politique de Confidentialité
+            </a>
+          </p>
         </div>
       </div>
     );
@@ -198,6 +209,17 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
 
           <p className="authFooterText">
             💡 {translations[currentLang].guestWarning || 'En mode invité, ta progression ne sera pas sauvegardée'}
+          </p>
+    <p style={{marginTop: '30px', fontSize: '11px', opacity: 0.5, textAlign: 'center'}}>
+            En utilisant ce site, vous acceptez notre{' '}
+            <a 
+              href="https://www.iubenda.com/privacy-policy/generator" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{color: '#4CAF50', textDecoration: 'underline'}}
+            >
+              Politique de Confidentialité
+            </a>
           </p>
         </div>
       </div>
@@ -257,6 +279,17 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
             <button className="authLink" onClick={() => { setAuthMode('signup'); resetForm(); }}>
               {translations[currentLang].signup || "S'inscrire"}
             </button>
+          </p>
+    <p style={{marginTop: '30px', fontSize: '11px', opacity: 0.5, textAlign: 'center'}}>
+            En utilisant ce site, vous acceptez notre{' '}
+            <a 
+              href="https://www.iubenda.com/privacy-policy/generator" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{color: '#4CAF50', textDecoration: 'underline'}}
+            >
+              Politique de Confidentialité
+            </a>
           </p>
         </div>
       </div>
@@ -335,6 +368,17 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
             <button className="authLink" onClick={() => { setAuthMode('login'); resetForm(); }}>
               {translations[currentLang].login || 'Se connecter'}
             </button>
+          </p>
+    <p style={{marginTop: '30px', fontSize: '11px', opacity: 0.5, textAlign: 'center'}}>
+            En utilisant ce site, vous acceptez notre{' '}
+            <a 
+              href="https://www.iubenda.com/privacy-policy/generator" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{color: '#4CAF50', textDecoration: 'underline'}}
+            >
+              Politique de Confidentialité
+            </a>
           </p>
         </div>
       </div>

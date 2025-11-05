@@ -138,8 +138,17 @@ const getCountriesByDifficulty = () => {
 
 const startRound = async () => {
   const availableCountries = getCountriesByDifficulty().filter(c => !usedCountries.includes(c));
-  const countryPool = availableCountries.length > 0 ? availableCountries : getCountriesByDifficulty();
-  const randomCountryName = countryPool[Math.floor(Math.random() * countryPool.length)];
+  
+  // 🔥 PROTECTION : Si plus de pays disponibles, arrêter le jeu
+  if (availableCountries.length === 0) {
+    console.warn('⚠️ Plus de pays disponibles pour cette difficulté !');
+    handleGameEnd();
+    return;
+  }
+  
+  const randomCountryName = availableCountries[Math.floor(Math.random() * availableCountries.length)];
+
+ setWrongAnswer(''); // ⬅️ Réinitialise la mauvaise réponse
 
   const countryData = countryPools[randomCountryName];
   const seenImageIds = [];
@@ -194,14 +203,20 @@ priorityImages.forEach(url => {
   const timerInterval = setInterval(() => {
     timeLeft--;
     setTimeElapsed(timeLeft);
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      if (intervalRef.current?.stop) {
-        intervalRef.current.stop();
-      }
-      setHasAnswered(true);
-      endRound(false, 0);
-    }
+ if (timeLeft <= 0) {
+  clearInterval(timerInterval);
+  if (intervalRef.current?.stop) {
+    intervalRef.current.stop();
+  }
+  setHasAnswered(true);
+  
+  // 🔥 Capture la réponse de l'utilisateur si elle existe
+  if (userAnswer.trim()) {
+    setWrongAnswer(userAnswer);
+  }
+  
+  endRound(false, 0);
+}
   }, 1000);
   roundTimerRef.current = timerInterval;
 
@@ -264,18 +279,33 @@ const endRound = (correct, score = 0) => {
     } else handleGameEnd();
   };
 
-  const handleGameEnd = async () => {
-    setGameState('gameEnd');
-    
-    if (user && userPseudo && totalScore > 0) {
-      try {
-        await saveScore(userPseudo, totalScore, gameMode, difficulty);
-        console.log('Score sauvegardé !');
-      } catch (error) {
-        console.error('Erreur sauvegarde:', error);
-      }
+const handleGameEnd = async () => {
+  setGameState('gameEnd');
+  
+  // 🔥 AJOUTEZ DES LOGS POUR DÉBUGGER
+  console.log('💾 Tentative de sauvegarde:', {
+    user: user?.uid,
+    pseudo: userPseudo,
+    score: totalScore,
+    mode: gameMode,
+    difficulty: difficulty
+  });
+  
+  if (user && userPseudo && totalScore > 0) {
+    try {
+      await saveScore(userPseudo, totalScore, gameMode, difficulty);
+      console.log('✅ Score sauvegardé avec succès !');
+    } catch (error) {
+      console.error('❌ Erreur sauvegarde:', error);
     }
-  };
+  } else {
+    console.log('⚠️ Conditions non remplies pour sauvegarder:', {
+      hasUser: !!user,
+      hasPseudo: !!userPseudo,
+      score: totalScore
+    });
+  }
+};
 
   const t = translations[language];
 
