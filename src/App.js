@@ -283,7 +283,7 @@ const handleGameEnd = async () => {
   setGameState('gameEnd');
   
   // 🔥 AJOUTEZ DES LOGS POUR DÉBUGGER
-  console.log('💾 Tentative de sauvegarde:', {
+  console.log('💾 Test 2', {
     user: user?.uid,
     pseudo: userPseudo,
     score: totalScore,
