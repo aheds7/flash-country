@@ -241,12 +241,14 @@ const handleLogin = async (e) => {
           <form onSubmit={handleLogin} className="authForm">
             <input
               type="text"
-              className="authInput"placeholder={translations[currentLang].emailOrPseudoPlaceholder || 'Email ou pseudo'}
-              
+              className="authInput"
+              placeholder={translations[currentLang].emailOrPseudoPlaceholder || 'Email ou pseudo'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               autoFocus
+              autoComplete="off"
+              name="username"
             />
 
             <input
