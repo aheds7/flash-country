@@ -8,6 +8,7 @@ import { onAuthChange, saveScore } from './firebase';
 import { countries as cloudflareCountries, getRandomImages } from './countries';
 import { addToHistory } from './imageHistory';
 import { useImagePreloader } from './useImagePreloader';
+import { EmojiText } from './emojiParser';
 
 const translations = {
   fr: {
@@ -354,7 +355,7 @@ function App() {
             👤 {userPseudo}
           </button>
           <button className="langButton" onClick={() => setShowLeaderboard(true)}>
-            {t.leaderboard}
+            <EmojiText>{t.leaderboard}</EmojiText>
           </button>
         </div>
 
@@ -376,7 +377,7 @@ function App() {
           </div>
           
           <div className="modeCard" onClick={() => setShowPvP(true)} style={{backgroundColor: '#e91e63', gridColumn: 'span 3'}}>
-            <h2>⚔️ {t.pvpMode}</h2>
+            <h2><EmojiText>⚔️ {t.pvpMode}</EmojiText></h2>
             <p>{t.pvpDesc}</p>
           </div>
         </div>
@@ -461,9 +462,13 @@ function App() {
     screenContent = (
       <div className="container">
         <div className="roundEndTop">
-          <h1 className="resultTitle">{isCorrect ? t.congratulations : t.failed}</h1>
+          <h1 className="resultTitle">
+            <EmojiText>{isCorrect ? t.congratulations : t.failed}</EmojiText>
+          </h1>
           {!isCorrect && wrongAnswer && <p className="wrongAnswer">{t.youAnswered}: "{wrongAnswer}"</p>}
-          <div className="flag">{countryData.flag}</div>
+          <div className="flag">
+            <EmojiText style={{fontSize: '80px'}}>{countryData.flag}</EmojiText>
+          </div>
           <p className="countryName">{t.countries[currentCountry]}</p>
           <p className="score">{isCorrect ? `+${roundScore} ${t.points}` : `0 ${t.points}`}</p>
           <p className="totalScore">{t.totalScore} {totalScore}</p>
