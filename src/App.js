@@ -3,29 +3,34 @@ import './App.css';
 import AuthScreen from './AuthScreen';
 import UserProfile from './UserProfile';
 import Leaderboard from './Leaderboard';
+import PvPMode from './PvPMode';
 import { onAuthChange, saveScore } from './firebase';
-import { countries as cloudinaryCountries, getRandomImages } from './countries';
+import { countries as cloudflareCountries, getRandomImages } from './countries';
 import { addToHistory } from './imageHistory';
+import { useImagePreloader } from './useImagePreloader';
 
 const translations = {
   fr: {
     // Jeu existant
-    appName: 'FLASH COUNTRY', selectMode: 'Choisissez un mode', quickMode: 'RAPIDE', normalMode: 'NORMAL', marathonMode: 'MARATHON', quickDesc: '3 rounds', normalDesc: '5 rounds', marathonDesc: '10 rounds', difficulty: 'Difficulté', easy: 'FACILE', medium: 'MOYEN', hard: 'DIFFICILE', round: 'Round', question: 'De quel pays s\'agit-il ?', typeCountry: 'Tapez le nom du pays...', congratulations: '🎉 Félicitations !', failed: '❌ Raté !', youAnswered: 'Vous avez répondu', capital: 'Capitale', population: 'Population', area: 'Superficie', points: 'points', totalScore: 'Score total :', nextRound: 'ROUND SUIVANT', seeResults: 'VOIR RÉSULTATS', gameOver: 'Partie terminée !', finalScore: 'Score final :', replay: 'REJOUER', menu: 'MENU', loading: 'Chargement...',
+    appName: 'FLASH COUNTRY', selectMode: 'Choisissez un mode', quickMode: 'RAPIDE', normalMode: 'NORMAL', marathonMode: 'MARATHON', quickDesc: '3 rounds', normalDesc: '5 rounds', marathonDesc: '10 rounds', difficulty: 'Difficulté', easy: 'FACILE', medium: 'MOYEN', hard: 'DIFFICILE', round: 'Round', question: 'De quel pays s\'agit-il ?', typeCountry: 'Tapez le nom du pays...', congratulations: '🎉 Félicitations !', failed: '❌ Raté !', youAnswered: 'Vous avez répondu', capital: 'Capitale', population: 'Population', area: 'Superficie', points: 'points', totalScore: 'Score total :', nextRound: 'ROUND SUIVANT', seeResults: 'VOIR RÉSULTATS', gameOver: 'Partie terminée !', finalScore: 'Score final :', replay: 'REJOUER', menu: 'MENU', loading: 'Chargement des images...',
     // Firebase
-    welcomeMessage: 'Bienvenue ! Comment veux-tu jouer ?', playAsGuest: 'Jouer en invité', guestDesc: 'Joue rapidement sans créer de compte', withAccount: 'Avec un compte', accountDesc: 'Garde ta progression et tes scores', guestInfo: 'Entre ton pseudo pour commencer', guestWarning: 'En mode invité, ta progression ne sera pas sauvegardée', pseudoPlaceholder: 'Ton pseudo', pseudoError: 'Le pseudo doit contenir au moins 3 caractères', pseudoTooLong: 'Le pseudo ne peut pas dépasser 20 caractères', login: 'Connexion', loginSubtitle: 'Connecte-toi à ton compte', emailPlaceholder: 'Email', passwordPlaceholder: 'Mot de passe (min. 6 caractères)', connecting: 'Connexion...', noAccount: 'Pas encore de compte ?', signup: "S'inscrire", signupSubtitle: 'Rejoins la communauté Flash Country !', confirmPasswordPlaceholder: 'Confirmer le mot de passe', creating: 'Création...', createAccount: 'Créer mon compte', alreadyAccount: 'Déjà un compte ?', emailError: 'Email invalide', passwordError: 'Le mot de passe doit contenir au moins 6 caractères', passwordMismatch: 'Les mots de passe ne correspondent pas', emailInUse: 'Cet email est déjà utilisé', weakPassword: 'Mot de passe trop faible', wrongCredentials: 'Email ou mot de passe incorrect', signupError: 'Erreur lors de la création du compte', loginError: 'Erreur de connexion', connectionError: 'Erreur de connexion. Réessayez.', profile: 'Mon Profil', statistics: 'Statistiques', history: 'Historique', bestScore: 'Meilleur score', totalGames: 'Parties jouées', average: 'Moyenne', memberSince: 'Membre depuis', noHistory: 'Aucune partie jouée pour le moment', logout: 'Se déconnecter', leaderboard: '🏆 Classement', viewLeaderboard: 'Voir le classement', allScores: 'Tous', currentSettings: 'Paramètres actuels', noScores: 'Aucun score enregistré', beFirst: 'Sois le premier à jouer dans cette catégorie !', refresh: 'Actualiser', back: 'Retour', startGame: 'Commencer à jouer', pseudoInfo: 'Ton pseudo sera affiché dans le classement',
+    welcomeMessage: 'Bienvenue ! Comment veux-tu jouer ?', playAsGuest: 'Jouer en invité', guestDesc: 'Joue rapidement sans créer de compte', withAccount: 'Avec un compte', accountDesc: 'Garde ta progression et tes scores', guestInfo: 'Entre ton pseudo pour commencer', guestWarning: 'En mode invité, ta progression ne sera pas sauvegardée', pseudoPlaceholder: 'Ton pseudo', pseudoError: 'Le pseudo doit contenir au moins 3 caractères', pseudoTooLong: 'Le pseudo ne peut pas dépasser 20 caractères', login: 'Connexion', loginSubtitle: 'Connecte-toi à ton compte', emailPlaceholder: 'Email', emailOrPseudoPlaceholder: 'Email ou pseudo', passwordPlaceholder: 'Mot de passe (min. 6 caractères)', connecting: 'Connexion...', noAccount: 'Pas encore de compte ?', signup: "S'inscrire", signupSubtitle: 'Rejoins la communauté Flash Country !', confirmPasswordPlaceholder: 'Confirmer le mot de passe', creating: 'Création...', createAccount: 'Créer mon compte', alreadyAccount: 'Déjà un compte ?', emailError: 'Email invalide', passwordError: 'Le mot de passe doit contenir au moins 6 caractères', passwordMismatch: 'Les mots de passe ne correspondent pas', emailInUse: 'Cet email est déjà utilisé', weakPassword: 'Mot de passe trop faible', wrongCredentials: 'Identifiant ou mot de passe incorrect', signupError: 'Erreur lors de la création du compte', loginError: 'Erreur de connexion', connectionError: 'Erreur de connexion. Réessayez.', profile: 'Mon Profil', statistics: 'Statistiques', history: 'Historique', bestScore: 'Meilleur score', totalGames: 'Parties jouées', average: 'Moyenne', memberSince: 'Membre depuis', noHistory: 'Aucune partie jouée pour le moment', logout: 'Se déconnecter', leaderboard: '🏆 Classement', viewLeaderboard: 'Voir le classement', allScores: 'Tous', currentSettings: 'Paramètres actuels', noScores: 'Aucun score enregistré', beFirst: 'Sois le premier à jouer dans cette catégorie !', refresh: 'Actualiser', back: 'Retour', startGame: 'Commencer à jouer', pseudoInfo: 'Ton pseudo sera affiché dans le classement',
+    // PvP
+    pvpMode: 'MODE PVP', pvpDesc: 'Affrontez un adversaire !',
     countries: { Spain: 'Espagne', Portugal: 'Portugal', France: 'France', Japan: 'Japon', Australia: 'Australie', Italy: 'Italie', Germany: 'Allemagne', UnitedKingdom: 'Royaume-Uni', Brazil: 'Brésil', Argentina: 'Argentine', Mexico: 'Mexique', Canada: 'Canada', USA: 'États-Unis', China: 'Chine', India: 'Inde', Thailand: 'Thaïlande', Egypt: 'Égypte', Morocco: 'Maroc', SouthAfrica: 'Afrique du Sud', NewZealand: 'Nouvelle-Zélande' }
   },
   en: {
     // Existing game
-    appName: 'FLASH COUNTRY', selectMode: 'Select a mode', quickMode: 'QUICK', normalMode: 'NORMAL', marathonMode: 'MARATHON', quickDesc: '3 rounds', normalDesc: '5 rounds', marathonDesc: '10 rounds', difficulty: 'Difficulty', easy: 'EASY', medium: 'MEDIUM', hard: 'HARD', round: 'Round', question: 'Which country is this?', typeCountry: 'Type the country name...', congratulations: '🎉 Congratulations!', failed: '❌ Failed!', youAnswered: 'You answered', capital: 'Capital', population: 'Population', area: 'Area', points: 'points', totalScore: 'Total score:', nextRound: 'NEXT ROUND', seeResults: 'SEE RESULTS', gameOver: 'Game Over!', finalScore: 'Final score:', replay: 'REPLAY', menu: 'MENU', loading: 'Loading...',
+    appName: 'FLASH COUNTRY', selectMode: 'Select a mode', quickMode: 'QUICK', normalMode: 'NORMAL', marathonMode: 'MARATHON', quickDesc: '3 rounds', normalDesc: '5 rounds', marathonDesc: '10 rounds', difficulty: 'Difficulty', easy: 'EASY', medium: 'MEDIUM', hard: 'HARD', round: 'Round', question: 'Which country is this?', typeCountry: 'Type the country name...', congratulations: '🎉 Congratulations!', failed: '❌ Failed!', youAnswered: 'You answered', capital: 'Capital', population: 'Population', area: 'Area', points: 'points', totalScore: 'Total score:', nextRound: 'NEXT ROUND', seeResults: 'SEE RESULTS', gameOver: 'Game Over!', finalScore: 'Final score:', replay: 'REPLAY', menu: 'MENU', loading: 'Loading images...',
     // Firebase
-    welcomeMessage: 'Welcome! How do you want to play?', playAsGuest: 'Play as Guest', guestDesc: 'Play quickly without creating an account', withAccount: 'With an Account', accountDesc: 'Keep your progress and scores', guestInfo: 'Enter your nickname to start', guestWarning: 'In guest mode, your progress will not be saved', pseudoPlaceholder: 'Your nickname', pseudoError: 'Nickname must be at least 3 characters', pseudoTooLong: 'Nickname cannot exceed 20 characters', login: 'Login', loginSubtitle: 'Sign in to your account', emailPlaceholder: 'Email', passwordPlaceholder: 'Password (min. 6 characters)', connecting: 'Connecting...', noAccount: "Don't have an account?", signup: 'Sign Up', signupSubtitle: 'Join the Flash Country community!', confirmPasswordPlaceholder: 'Confirm password', creating: 'Creating...', createAccount: 'Create my account', alreadyAccount: 'Already have an account?', emailError: 'Invalid email', passwordError: 'Password must be at least 6 characters', passwordMismatch: 'Passwords do not match', emailInUse: 'This email is already in use', weakPassword: 'Password too weak', wrongCredentials: 'Incorrect email or password', signupError: 'Error creating account', loginError: 'Connection error', connectionError: 'Connection error. Try again.', profile: 'My Profile', statistics: 'Statistics', history: 'History', bestScore: 'Best Score', totalGames: 'Games Played', average: 'Average', memberSince: 'Member since', noHistory: 'No games played yet', logout: 'Log Out', leaderboard: '🏆 Leaderboard', viewLeaderboard: 'View Leaderboard', allScores: 'All', currentSettings: 'Current Settings', noScores: 'No scores recorded yet', beFirst: 'Be the first to play in this category!', refresh: 'Refresh', back: 'Back', startGame: 'Start Playing', pseudoInfo: 'Your nickname will be displayed in the leaderboard',
+    welcomeMessage: 'Welcome! How do you want to play?', playAsGuest: 'Play as Guest', guestDesc: 'Play quickly without creating an account', withAccount: 'With an Account', accountDesc: 'Keep your progress and scores', guestInfo: 'Enter your nickname to start', guestWarning: 'In guest mode, your progress will not be saved', pseudoPlaceholder: 'Your nickname', pseudoError: 'Nickname must be at least 3 characters', pseudoTooLong: 'Nickname cannot exceed 20 characters', login: 'Login', loginSubtitle: 'Sign in to your account', emailPlaceholder: 'Email', emailOrPseudoPlaceholder: 'Email ou pseudo', passwordPlaceholder: 'Password (min. 6 characters)', connecting: 'Connecting...', noAccount: "Don't have an account?", signup: 'Sign Up', signupSubtitle: 'Join the Flash Country community!', confirmPasswordPlaceholder: 'Confirm password', creating: 'Creating...', createAccount: 'Create my account', alreadyAccount: 'Already have an account?', emailError: 'Invalid email', passwordError: 'Password must be at least 6 characters', passwordMismatch: 'Passwords do not match', emailInUse: 'This email is already in use', weakPassword: 'Password too weak', wrongCredentials: 'Incorrect email or password', signupError: 'Error creating account', loginError: 'Connection error', connectionError: 'Connection error. Try again.', profile: 'My Profile', statistics: 'Statistics', history: 'History', bestScore: 'Best Score', totalGames: 'Games Played', average: 'Average', memberSince: 'Member since', noHistory: 'No games played yet', logout: 'Log Out', leaderboard: '🏆 Leaderboard', viewLeaderboard: 'View Leaderboard', allScores: 'All', currentSettings: 'Current Settings', noScores: 'No scores recorded yet', beFirst: 'Be the first to play in this category!', refresh: 'Refresh', back: 'Back', startGame: 'Start Playing', pseudoInfo: 'Your nickname will be displayed in the leaderboard',
+    // PvP
+    pvpMode: 'PVP MODE', pvpDesc: 'Challenge an opponent!',
     countries: { Spain: 'Spain', Portugal: 'Portugal', France: 'France', Japan: 'Japan', Australia: 'Australia', Italy: 'Italy', Germany: 'Germany', UnitedKingdom: 'United Kingdom', Brazil: 'Brazil', Argentina: 'Argentina', Mexico: 'Mexico', Canada: 'Canada', USA: 'USA', China: 'China', India: 'India', Thailand: 'Thailand', Egypt: 'Egypt', Morocco: 'Morocco', SouthAfrica: 'South Africa', NewZealand: 'New Zealand' }
   }
 };
 
-// Utilise les données Cloudinary
-const countryPools = cloudinaryCountries;
+const countryPools = cloudflareCountries;
 
 const ProgressBar = ({ timeLeft }) => {
   const percentage = (timeLeft / 30) * 100;
@@ -48,6 +53,7 @@ function App() {
   const [userPseudo, setUserPseudo] = useState('');
   const [showProfile, setShowProfile] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showPvP, setShowPvP] = useState(false);
   
   // États jeu existants
   const [gameState, setGameState] = useState('auth');
@@ -70,6 +76,16 @@ function App() {
   const intervalRef = useRef(null);
   const roundTimerRef = useRef(null);
   const [currentCountryData, setCurrentCountryData] = useState(null);
+  
+  // 🔥 NOUVEAUX ÉTATS POUR LE PRÉCHARGEMENT
+  const [imagesToPreload, setImagesToPreload] = useState([]);
+  const [shouldPreload, setShouldPreload] = useState(false);
+  
+  // 🔥 HOOK DE PRÉCHARGEMENT
+  const { loaded, loadedCount, totalImages, progress } = useImagePreloader(
+    imagesToPreload,
+    shouldPreload
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthChange((firebaseUser) => {
@@ -113,10 +129,16 @@ function App() {
   };
 
   useEffect(() => {
+    if (gameState === 'countdown' && countdown === 5) {
+      // 🔥 LANCER LE PRÉCHARGEMENT DÈS LE DÉBUT DU COUNTDOWN
+      prepareRound();
+    }
+    
     if (gameState === 'countdown' && countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (gameState === 'countdown' && countdown === 0) startRound();
+    }
+    // Le démarrage du jeu se fait dans l'autre useEffect quand loaded = true et countdown = 0
   }, [countdown, gameState]);
 
   useEffect(() => {
@@ -132,111 +154,98 @@ function App() {
     }
   }, [gameState, currentRound, maxRounds]);
 
-const getCountriesByDifficulty = () => {
-  return Object.keys(countryPools).filter(country => countryPools[country].difficulty === difficulty);
-};
-
-const startRound = async () => {
-  const availableCountries = getCountriesByDifficulty().filter(c => !usedCountries.includes(c));
-  
-  // 🔥 PROTECTION : Si plus de pays disponibles, arrêter le jeu
-  if (availableCountries.length === 0) {
-    console.warn('⚠️ Plus de pays disponibles pour cette difficulté !');
-    handleGameEnd();
-    return;
-  }
-  
-  const randomCountryName = availableCountries[Math.floor(Math.random() * availableCountries.length)];
-
- setWrongAnswer(''); // ⬅️ Réinitialise la mauvaise réponse
-
-  const countryData = countryPools[randomCountryName];
-  const seenImageIds = [];
-  const randomImages = getRandomImages(countryData, 100, seenImageIds);
-  
-
-  
-  addToHistory(randomCountryName, randomImages.map(img => img.id));
-  
-  const currentCountryData = {
-    ...countryData,
-    images: randomImages.map(img => img.url)
-  };
-  
-  // 🔥 PRÉCHARGEMENT DES 15 PREMIÈRES IMAGES SEULEMENT (plus rapide)
-
-  const priorityImages = currentCountryData.images.slice(0, 10);
-  
-  // Précharge en parallèle sans bloquer
- let loadedCount = 0;
-priorityImages.forEach(url => {
-  const img = new Image();
-  img.onload = () => {
-    loadedCount++;
-    if (loadedCount === priorityImages.length) {
+  // 🔥 QUAND LES IMAGES SONT CHARGÉES ET QUE LE COUNTDOWN EST FINI, DÉMARRER LE JEU
+  useEffect(() => {
+    if (loaded && gameState === 'countdown' && countdown === 0) {
+      startRound();
     }
+  }, [loaded, gameState, countdown]);
+
+  const getCountriesByDifficulty = () => {
+    return Object.keys(countryPools).filter(country => countryPools[country].difficulty === difficulty);
   };
-  img.src = url;
-});
-  
-  // 🔥 PRÉCHARGEMENT EN ARRIÈRE-PLAN (non bloquant)
-  setTimeout(() => {
-    const remainingImages = currentCountryData.images.slice(15);
-    remainingImages.forEach(url => {
-      const img = new Image();
-      img.src = url;
-    });
-  }, 100);
-  
-  // 🔥 DÉMARRAGE IMMÉDIAT
-  setCurrentCountry(randomCountryName);
-  setCurrentCountryData(currentCountryData);
-  setUsedCountries([...usedCountries, randomCountryName]);
-  setCurrentImageIndex(0);
-  setUserAnswer('');
-  setTimeElapsed(30);
-  setHasAnswered(false);
-  setGameState('playing');
 
-  // Timer
-  let timeLeft = 30;
-  const timerInterval = setInterval(() => {
-    timeLeft--;
-    setTimeElapsed(timeLeft);
- if (timeLeft <= 0) {
-  clearInterval(timerInterval);
-  if (intervalRef.current?.stop) {
-    intervalRef.current.stop();
-  }
-  setHasAnswered(true);
-  
-  // 🔥 Capture la réponse de l'utilisateur si elle existe
-  if (userAnswer.trim()) {
-    setWrongAnswer(userAnswer);
-  }
-  
-  endRound(false, 0);
-}
-  }, 1000);
-  roundTimerRef.current = timerInterval;
-
-  // 🔥 DÉFILEMENT OPTIMISÉ - Ralenti à 80ms pour plus de fluidité
-  let animationId;
-  let lastTime = Date.now();
-  const imageLength = currentCountryData.images.length;
-
-  const animateImages = () => {
-    const now = Date.now();
-    if (now - lastTime >= 80) { // ⬅️ 80ms au lieu de 50ms = plus fluide
-      setCurrentImageIndex(prev => (prev + 1) % imageLength);
-      lastTime = now;
+  // 🔥 PRÉPARER LE ROUND (GÉNÉRER LES IMAGES ET LANCER LE PRÉCHARGEMENT)
+  const prepareRound = () => {
+    const availableCountries = getCountriesByDifficulty().filter(c => !usedCountries.includes(c));
+    
+    if (availableCountries.length === 0) {
+      console.warn('⚠️ Plus de pays disponibles pour cette difficulté !');
+      handleGameEnd();
+      return;
     }
+    
+    const randomCountryName = availableCountries[Math.floor(Math.random() * availableCountries.length)];
+    setWrongAnswer('');
+
+    const countryData = countryPools[randomCountryName];
+    const seenImageIds = [];
+    const randomImages = getRandomImages(countryData, 100, seenImageIds);
+    
+    addToHistory(randomCountryName, randomImages.map(img => img.id));
+    
+    const currentCountryData = {
+      ...countryData,
+      images: randomImages.map(img => img.url)
+    };
+    
+    // 🔥 PRÉPARATION DES DONNÉES
+    setCurrentCountry(randomCountryName);
+    setCurrentCountryData(currentCountryData);
+    setUsedCountries([...usedCountries, randomCountryName]);
+    setCurrentImageIndex(0);
+    setUserAnswer('');
+    setHasAnswered(false);
+    
+    // 🔥 LANCER LE PRÉCHARGEMENT (pendant le countdown)
+    setImagesToPreload(currentCountryData.images);
+    setShouldPreload(true);
+  };
+
+  // 🔥 DÉMARRER LE ROUND (APRÈS CHARGEMENT)
+  const startRound = () => {
+    setTimeElapsed(30);
+    setGameState('playing');
+    setShouldPreload(false); // Stop le hook de préchargement
+
+    // Timer
+    let timeLeft = 30;
+    const timerInterval = setInterval(() => {
+      timeLeft--;
+      setTimeElapsed(timeLeft);
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        if (intervalRef.current?.stop) {
+          intervalRef.current.stop();
+        }
+        setHasAnswered(true);
+        
+        if (userAnswer.trim()) {
+          setWrongAnswer(userAnswer);
+        }
+        
+        endRound(false, 0);
+      }
+    }, 1000);
+    roundTimerRef.current = timerInterval;
+
+    // 🔥 DÉFILEMENT OPTIMISÉ - 60ms pour une fluidité parfaite
+    let animationId;
+    let lastTime = Date.now();
+    const imageLength = currentCountryData.images.length;
+
+    const animateImages = () => {
+      const now = Date.now();
+      if (now - lastTime >= 60) {
+        setCurrentImageIndex(prev => (prev + 1) % imageLength);
+        lastTime = now;
+      }
+      animationId = requestAnimationFrame(animateImages);
+    };
+
     animationId = requestAnimationFrame(animateImages);
+    intervalRef.current = { stop: () => cancelAnimationFrame(animationId) };
   };
-
-  animationId = requestAnimationFrame(animateImages);
-  intervalRef.current = { stop: () => cancelAnimationFrame(animationId) };
-};
 
   const checkAnswer = () => {
     if (!currentCountry || !userAnswer.trim() || hasAnswered) return;
@@ -255,21 +264,21 @@ priorityImages.forEach(url => {
     }
   };
 
-const endRound = (correct, score = 0) => {
-  if (intervalRef.current?.stop) {
-    intervalRef.current.stop(); // Pour requestAnimationFrame
-  } else {
-    clearInterval(intervalRef.current);
-  }
-  clearInterval(roundTimerRef.current);
-  
-  setTimeout(() => {
-    setIsCorrect(correct);
-    setRoundScore(score);
-    setTotalScore(totalScore + score);
-    setGameState('roundEnd');
-  }, 100);
-};
+  const endRound = (correct, score = 0) => {
+    if (intervalRef.current?.stop) {
+      intervalRef.current.stop();
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    clearInterval(roundTimerRef.current);
+    
+    setTimeout(() => {
+      setIsCorrect(correct);
+      setRoundScore(score);
+      setTotalScore(totalScore + score);
+      setGameState('roundEnd');
+    }, 100);
+  };
 
   const nextRound = () => {
     if (currentRound < maxRounds - 1) {
@@ -279,33 +288,32 @@ const endRound = (correct, score = 0) => {
     } else handleGameEnd();
   };
 
-const handleGameEnd = async () => {
-  setGameState('gameEnd');
-  
-  // 🔥 AJOUTEZ DES LOGS POUR DÉBUGGER
-  console.log('💾 Tentative de sauvegarde:', {
-    user: user?.uid,
-    pseudo: userPseudo,
-    score: totalScore,
-    mode: gameMode,
-    difficulty: difficulty
-  });
-  
-  if (user && userPseudo && totalScore > 0) {
-    try {
-      await saveScore(userPseudo, totalScore, gameMode, difficulty);
-      console.log('✅ Score sauvegardé avec succès !');
-    } catch (error) {
-      console.error('❌ Erreur sauvegarde:', error);
-    }
-  } else {
-    console.log('⚠️ Conditions non remplies pour sauvegarder:', {
-      hasUser: !!user,
-      hasPseudo: !!userPseudo,
-      score: totalScore
+  const handleGameEnd = async () => {
+    setGameState('gameEnd');
+    
+    console.log('💾 Tentative de sauvegarde:', {
+      user: user?.uid,
+      pseudo: userPseudo,
+      score: totalScore,
+      mode: gameMode,
+      difficulty: difficulty
     });
-  }
-};
+    
+    if (user && userPseudo && totalScore > 0) {
+      try {
+        await saveScore(userPseudo, totalScore, gameMode, difficulty);
+        console.log('✅ Score sauvegardé avec succès !');
+      } catch (error) {
+        console.error('❌ Erreur sauvegarde:', error);
+      }
+    } else {
+      console.log('⚠️ Conditions non remplies pour sauvegarder:', {
+        hasUser: !!user,
+        hasPseudo: !!userPseudo,
+        score: totalScore
+      });
+    }
+  };
 
   const t = translations[language];
 
@@ -321,7 +329,18 @@ const handleGameEnd = async () => {
     );
   }
 
-  // 🔥 MENU PRINCIPAL CORRIGÉ
+  if (showPvP) {
+    return (
+      <PvPMode 
+        user={user}
+        userPseudo={userPseudo}
+        onBack={() => setShowPvP(false)}
+        translations={translations}
+        language={language}
+      />
+    );
+  }
+
   if (gameState === 'modeSelect') {
     screenContent = (
       <div className="container">
@@ -355,12 +374,16 @@ const handleGameEnd = async () => {
             <h2>{t.marathonMode}</h2>
             <p>{t.marathonDesc}</p>
           </div>
+          
+          <div className="modeCard" onClick={() => setShowPvP(true)} style={{backgroundColor: '#e91e63', gridColumn: 'span 3'}}>
+            <h2>⚔️ {t.pvpMode}</h2>
+            <p>{t.pvpDesc}</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  // 🔥 SÉLECTION DIFFICULTÉ CORRIGÉE
   if (gameState === 'difficultySelect') {
     screenContent = (
       <div className="container">
@@ -393,6 +416,8 @@ const handleGameEnd = async () => {
     );
   }
 
+  // 🔥 NOUVEL ÉCRAN DE CHARGEMENT - Supprimé car chargement silencieux pendant countdown
+
   if (gameState === 'playing') {
     screenContent = (
       <div className="container">
@@ -403,15 +428,15 @@ const handleGameEnd = async () => {
           </div>
           <ProgressBar timeLeft={timeElapsed} />
           <div className="imageContainer">
-<img 
-  src={currentCountryData?.images[currentImageIndex]} 
-  alt="country" 
-  className="image"
-  onError={(e) => {
-    console.error('❌ Erreur chargement image:', e.target.src);
-    setCurrentImageIndex((currentImageIndex + 1) % (currentCountryData?.images.length || 1));
-  }}
-/>
+            <img 
+              src={currentCountryData?.images[currentImageIndex]} 
+              alt="country" 
+              className="image"
+              onError={(e) => {
+                console.error('❌ Erreur chargement image:', e.target.src);
+                setCurrentImageIndex((currentImageIndex + 1) % (currentCountryData?.images.length || 1));
+              }}
+            />
           </div>
           <div className="inputContainer">
             <input
@@ -469,7 +494,7 @@ const handleGameEnd = async () => {
     );
   }
 
-return (
+  return (
     <>
       {screenContent}
       
@@ -497,4 +522,3 @@ return (
 }
 
 export default App;
-// Force rebuild

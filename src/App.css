@@ -775,3 +775,113 @@ body {
     width: 100%;
   }
 }
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Style pour l'écran de chargement */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.loading-progress-bar {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.loading-progress-container {
+  width: 100%;
+  height: 30px;
+  background-color: #333;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid #555;
+}
+
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #45a049);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.loading-counter {
+  color: #aaa;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.loading-dots {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.loading-dot {
+  width: 15px;
+  height: 15px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Style pour les emojis Twemoji */
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.05em 0 0.1em;
+  vertical-align: -0.1em;
+  display: inline-block;
+}
+
+/* Emojis dans les boutons */
+.langButton img.emoji,
+.button img.emoji {
+  height: 1.2em;
+  width: 1.2em;
+}
+
+/* Drapeaux */
+.flag img.emoji {
+  height: 80px;
+  width: 80px;
+}
+
+/* Emojis dans les titres */
+h1 img.emoji,
+h2 img.emoji {
+  height: 1em;
+  width: 1em;
+}

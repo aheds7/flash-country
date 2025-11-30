@@ -1,12 +1,12 @@
 // ========================================
-// COUNTRIES DATA - Optimisé pour Cloudinary
+// COUNTRIES DATA - Optimisé pour Cloudflare R2
 // ========================================
 
 /**
  * Structure des données pays pour Flash Country
  * 
  * Chaque pays doit avoir :
- * - cloudinaryFolder: chemin vers le dossier Cloudinary
+ * - folder: nom du dossier dans R2
  * - totalImages: nombre total d'images disponibles
  * - difficulty: 'easy', 'medium', ou 'hard'
  * - flag: emoji du drapeau
@@ -14,10 +14,13 @@
  * - capital, population, area: infos en FR et EN
  */
 
+// URL de base de ton bucket R2
+const R2_BASE_URL = 'https://pub-65a723b7e49d4a52b1b4cfd6d5b66a14.r2.dev';
+
 export const countries = {
   France: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/france',
+    folder: 'france',
     totalImages: 225,
     flag: '🇫🇷',
     names: ['france', 'francia'],
@@ -37,7 +40,7 @@ export const countries = {
   
   Spain: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/spain',
+    folder: 'spain',
     totalImages: 219,
     flag: '🇪🇸',
     names: ['spain', 'espagne', 'espana'],
@@ -57,7 +60,7 @@ export const countries = {
   
   Italy: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/italy',
+    folder: 'italy',
     totalImages: 220,
     flag: '🇮🇹',
     names: ['italy', 'italie', 'italia'],
@@ -77,7 +80,7 @@ export const countries = {
   
   Germany: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/germany',
+    folder: 'germany',
     totalImages: 222,
     flag: '🇩🇪',
     names: ['germany', 'allemagne', 'deutschland'],
@@ -97,7 +100,7 @@ export const countries = {
   
   UnitedKingdom: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/England',
+    folder: 'england',
     totalImages: 214,
     flag: '🇬🇧',
     names: ['united kingdom', 'royaume-uni', 'royaume uni', 'uk', 'angleterre', 'england'],
@@ -117,7 +120,7 @@ export const countries = {
   
   Portugal: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/portugal',
+    folder: 'portugal',
     totalImages: 224,
     flag: '🇵🇹',
     names: ['portugal'],
@@ -137,7 +140,7 @@ export const countries = {
   
   Japan: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/japan',
+    folder: 'japan',
     totalImages: 228,
     flag: '🇯🇵',
     names: ['japan', 'japon', 'nippon'],
@@ -157,7 +160,7 @@ export const countries = {
   
   USA: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/usa',
+    folder: 'usa',
     totalImages: 225,
     flag: '🇺🇸',
     names: ['usa', 'united states', 'etats-unis', 'etats unis', 'us', 'america', 'amerique'],
@@ -177,7 +180,7 @@ export const countries = {
   
   Canada: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/canada',
+    folder: 'canada',
     totalImages: 222,
     flag: '🇨🇦',
     names: ['canada'],
@@ -197,7 +200,7 @@ export const countries = {
   
   Brazil: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/brazil',
+    folder: 'brazil',
     totalImages: 220,
     flag: '🇧🇷',
     names: ['brazil', 'bresil', 'brasil'],
@@ -217,7 +220,7 @@ export const countries = {
   
   Argentina: {
     difficulty: 'hard',
-    cloudinaryFolder: 'countries/argentina',
+    folder: 'argentina',
     totalImages: 203,
     flag: '🇦🇷',
     names: ['argentina', 'argentine'],
@@ -237,7 +240,7 @@ export const countries = {
   
   Mexico: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/mexico',
+    folder: 'mexico',
     totalImages: 212,
     flag: '🇲🇽',
     names: ['mexico', 'mexique'],
@@ -257,7 +260,7 @@ export const countries = {
   
   Australia: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/australia',
+    folder: 'australia',
     totalImages: 226,
     flag: '🇦🇺',
     names: ['australia', 'australie'],
@@ -277,7 +280,7 @@ export const countries = {
   
   NewZealand: {
     difficulty: 'hard',
-    cloudinaryFolder: 'countries/new-zealand',
+    folder: 'new_zealand',
     totalImages: 120,
     flag: '🇳🇿',
     names: ['new zealand', 'nouvelle-zelande', 'nouvelle zelande'],
@@ -297,7 +300,7 @@ export const countries = {
   
   China: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/china',
+    folder: 'china',
     totalImages: 216,
     flag: '🇨🇳',
     names: ['china', 'chine'],
@@ -317,7 +320,7 @@ export const countries = {
   
   India: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/india',
+    folder: 'india',
     totalImages: 197,
     flag: '🇮🇳',
     names: ['india', 'inde'],
@@ -337,7 +340,7 @@ export const countries = {
   
   Thailand: {
     difficulty: 'medium',
-    cloudinaryFolder: 'countries/thailand',
+    folder: 'thailand',
     totalImages: 228,
     flag: '🇹🇭',
     names: ['thailand', 'thailande', 'siam'],
@@ -357,7 +360,7 @@ export const countries = {
   
   Egypt: {
     difficulty: 'easy',
-    cloudinaryFolder: 'countries/egypt',
+    folder: 'egypt',
     totalImages: 197,
     flag: '🇪🇬',
     names: ['egypt', 'egypte'],
@@ -377,7 +380,7 @@ export const countries = {
   
   Morocco: {
     difficulty: 'hard',
-    cloudinaryFolder: 'countries/morocco',
+    folder: 'marocco',
     totalImages: 133,
     flag: '🇲🇦',
     names: ['morocco', 'maroc'],
@@ -397,7 +400,7 @@ export const countries = {
   
   SouthAfrica: {
     difficulty: 'hard',
-    cloudinaryFolder: 'countries/south-africa',
+    folder: 'south_africa',
     totalImages: 202,
     flag: '🇿🇦',
     names: ['south africa', 'afrique du sud'],
@@ -416,353 +419,353 @@ export const countries = {
   },
 
   Austria: {
-  difficulty: 'hard',
-  cloudinaryFolder: 'countries/austria',
-  totalImages: 195,
-  flag: '🇦🇹',
-  names: ['austria', 'autriche'],
-  capital: {
-    fr: 'Vienne',
-    en: 'Vienna'
+    difficulty: 'hard',
+    folder: 'austria',
+    totalImages: 195,
+    flag: '🇦🇹',
+    names: ['austria', 'autriche'],
+    capital: {
+      fr: 'Vienne',
+      en: 'Vienna'
+    },
+    population: {
+      fr: '9 millions d\'habitants',
+      en: '9 million inhabitants'
+    },
+    area: {
+      fr: '83 879 km²',
+      en: '83,879 km²'
+    }
   },
-  population: {
-    fr: '9 millions d\'habitants',
-    en: '9 million inhabitants'
-  },
-  area: {
-    fr: '83 879 km²',
-    en: '83,879 km²'
-  }
-},
 
-Belgium: {
-  difficulty: 'hard',
-  cloudinaryFolder: 'countries/belgium',
-  totalImages: 234,
-  flag: '🇧🇪',
-  names: ['belgium', 'belgique'],
-  capital: {
-    fr: 'Bruxelles',
-    en: 'Brussels'
+  Belgium: {
+    difficulty: 'hard',
+    folder: 'belgium',
+    totalImages: 234,
+    flag: '🇧🇪',
+    names: ['belgium', 'belgique'],
+    capital: {
+      fr: 'Bruxelles',
+      en: 'Brussels'
+    },
+    population: {
+      fr: '11,5 millions d\'habitants',
+      en: '11.5 million inhabitants'
+    },
+    area: {
+      fr: '30 689 km²',
+      en: '30,689 km²'
+    }
   },
-  population: {
-    fr: '11,5 millions d\'habitants',
-    en: '11.5 million inhabitants'
-  },
-  area: {
-    fr: '30 689 km²',
-    en: '30,689 km²'
-  }
-},
 
-Chile: {
-  difficulty: 'hard',
-  cloudinaryFolder: 'countries/chile',
-  totalImages: 146,
-  flag: '🇨🇱',
-  names: ['chile', 'chili'],
-  capital: {
-    fr: 'Santiago',
-    en: 'Santiago'
+  Chile: {
+    difficulty: 'hard',
+    folder: 'chile',
+    totalImages: 146,
+    flag: '🇨🇱',
+    names: ['chile', 'chili'],
+    capital: {
+      fr: 'Santiago',
+      en: 'Santiago'
+    },
+    population: {
+      fr: '19 millions d\'habitants',
+      en: '19 million inhabitants'
+    },
+    area: {
+      fr: '756 102 km²',
+      en: '756,102 km²'
+    }
   },
-  population: {
-    fr: '19 millions d\'habitants',
-    en: '19 million inhabitants'
-  },
-  area: {
-    fr: '756 102 km²',
-    en: '756,102 km²'
-  }
-},
 
-Croatia: {
-  difficulty: 'medium',
-  cloudinaryFolder: 'countries/croatia',
-  totalImages: 179,
-  flag: '🇭🇷',
-  names: ['croatia', 'croatie', 'hrvatska'],
-  capital: {
-    fr: 'Zagreb',
-    en: 'Zagreb'
+  Croatia: {
+    difficulty: 'medium',
+    folder: 'croatia',
+    totalImages: 179,
+    flag: '🇭🇷',
+    names: ['croatia', 'croatie', 'hrvatska'],
+    capital: {
+      fr: 'Zagreb',
+      en: 'Zagreb'
+    },
+    population: {
+      fr: '4 millions d\'habitants',
+      en: '4 million inhabitants'
+    },
+    area: {
+      fr: '56 594 km²',
+      en: '56,594 km²'
+    }
   },
-  population: {
-    fr: '4 millions d\'habitants',
-    en: '4 million inhabitants'
-  },
-  area: {
-    fr: '56 594 km²',
-    en: '56,594 km²'
-  }
-},
 
-Cuba: {
-  difficulty: 'medium',
-  cloudinaryFolder: 'countries/cuba',
-  totalImages: 186,
-  flag: '🇨🇺',
-  names: ['cuba'],
-  capital: {
-    fr: 'La Havane',
-    en: 'Havana'
+  Cuba: {
+    difficulty: 'medium',
+    folder: 'cuba',
+    totalImages: 186,
+    flag: '🇨🇺',
+    names: ['cuba'],
+    capital: {
+      fr: 'La Havane',
+      en: 'Havana'
+    },
+    population: {
+      fr: '11 millions d\'habitants',
+      en: '11 million inhabitants'
+    },
+    area: {
+      fr: '109 884 km²',
+      en: '109,884 km²'
+    }
   },
-  population: {
-    fr: '11 millions d\'habitants',
-    en: '11 million inhabitants'
-  },
-  area: {
-    fr: '109 884 km²',
-    en: '109,884 km²'
-  }
-},
 
-Dubai: {
-  difficulty: 'easy',
-  cloudinaryFolder: 'countries/dubai',
-  totalImages: 178,
-  flag: '🇦🇪',
-  names: ['dubai', 'dubaï', 'uae', 'emirats'],
-  capital: {
-    fr: 'Dubaï',
-    en: 'Dubai'
+  Dubai: {
+    difficulty: 'easy',
+    folder: 'dubai',
+    totalImages: 178,
+    flag: '🇦🇪',
+    names: ['dubai', 'dubaï', 'uae', 'emirats'],
+    capital: {
+      fr: 'Dubaï',
+      en: 'Dubai'
+    },
+    population: {
+      fr: '3,5 millions d\'habitants',
+      en: '3.5 million inhabitants'
+    },
+    area: {
+      fr: '4 114 km²',
+      en: '4,114 km²'
+    }
   },
-  population: {
-    fr: '3,5 millions d\'habitants',
-    en: '3.5 million inhabitants'
-  },
-  area: {
-    fr: '4 114 km²',
-    en: '4,114 km²'
-  }
-},
 
-Greece: {
-  difficulty: 'easy',
-  cloudinaryFolder: 'countries/greece',
-  totalImages: 222,
-  flag: '🇬🇷',
-  names: ['greece', 'grece', 'grèce'],
-  capital: {
-    fr: 'Athènes',
-    en: 'Athens'
+  Greece: {
+    difficulty: 'easy',
+    folder: 'greece',
+    totalImages: 222,
+    flag: '🇬🇷',
+    names: ['greece', 'grece', 'grèce'],
+    capital: {
+      fr: 'Athènes',
+      en: 'Athens'
+    },
+    population: {
+      fr: '10,5 millions d\'habitants',
+      en: '10.5 million inhabitants'
+    },
+    area: {
+      fr: '131 957 km²',
+      en: '131,957 km²'
+    }
   },
-  population: {
-    fr: '10,5 millions d\'habitants',
-    en: '10.5 million inhabitants'
-  },
-  area: {
-    fr: '131 957 km²',
-    en: '131,957 km²'
-  }
-},
 
-Ireland: {
-  difficulty: 'hard',
-  cloudinaryFolder: 'countries/ireland',
-  totalImages: 210,
-  flag: '🇮🇪',
-  names: ['ireland', 'irlande', 'eire'],
-  capital: {
-    fr: 'Dublin',
-    en: 'Dublin'
+  Ireland: {
+    difficulty: 'hard',
+    folder: 'ireland',
+    totalImages: 210,
+    flag: '🇮🇪',
+    names: ['ireland', 'irlande', 'eire'],
+    capital: {
+      fr: 'Dublin',
+      en: 'Dublin'
+    },
+    population: {
+      fr: '5 millions d\'habitants',
+      en: '5 million inhabitants'
+    },
+    area: {
+      fr: '70 273 km²',
+      en: '70,273 km²'
+    }
   },
-  population: {
-    fr: '5 millions d\'habitants',
-    en: '5 million inhabitants'
-  },
-  area: {
-    fr: '70 273 km²',
-    en: '70,273 km²'
-  }
-},
 
-Malaysia: {
-  difficulty: 'medium',
-  cloudinaryFolder: 'countries/malaysia',
-  totalImages: 159,
-  flag: '🇲🇾',
-  names: ['malaysia', 'malaisie'],
-  capital: {
-    fr: 'Kuala Lumpur',
-    en: 'Kuala Lumpur'
+  Malaysia: {
+    difficulty: 'medium',
+    folder: 'malaysia',
+    totalImages: 159,
+    flag: '🇲🇾',
+    names: ['malaysia', 'malaisie'],
+    capital: {
+      fr: 'Kuala Lumpur',
+      en: 'Kuala Lumpur'
+    },
+    population: {
+      fr: '33 millions d\'habitants',
+      en: '33 million inhabitants'
+    },
+    area: {
+      fr: '330 803 km²',
+      en: '330,803 km²'
+    }
   },
-  population: {
-    fr: '33 millions d\'habitants',
-    en: '33 million inhabitants'
-  },
-  area: {
-    fr: '330 803 km²',
-    en: '330,803 km²'
-  }
-},
 
-Netherlands: {
-  difficulty: 'easy',
-  cloudinaryFolder: 'countries/netherlands',
-  totalImages: 224,
-  flag: '🇳🇱',
-  names: ['netherlands', 'pays-bas', 'pays bas', 'hollande', 'holland'],
-  capital: {
-    fr: 'Amsterdam',
-    en: 'Amsterdam'
+  Netherlands: {
+    difficulty: 'easy',
+    folder: 'netherlands',
+    totalImages: 224,
+    flag: '🇳🇱',
+    names: ['netherlands', 'pays-bas', 'pays bas', 'hollande', 'holland'],
+    capital: {
+      fr: 'Amsterdam',
+      en: 'Amsterdam'
+    },
+    population: {
+      fr: '17,5 millions d\'habitants',
+      en: '17.5 million inhabitants'
+    },
+    area: {
+      fr: '41 543 km²',
+      en: '41,543 km²'
+    }
   },
-  population: {
-    fr: '17,5 millions d\'habitants',
-    en: '17.5 million inhabitants'
-  },
-  area: {
-    fr: '41 543 km²',
-    en: '41,543 km²'
-  }
-},
 
-Norway: {
-  difficulty: 'easy',
-  cloudinaryFolder: 'countries/norway',
-  totalImages: 162,
-  flag: '🇳🇴',
-  names: ['norway', 'norvege', 'norvège'],
-  capital: {
-    fr: 'Oslo',
-    en: 'Oslo'
+  Norway: {
+    difficulty: 'easy',
+    folder: 'norway',
+    totalImages: 162,
+    flag: '🇳🇴',
+    names: ['norway', 'norvege', 'norvège'],
+    capital: {
+      fr: 'Oslo',
+      en: 'Oslo'
+    },
+    population: {
+      fr: '5,5 millions d\'habitants',
+      en: '5.5 million inhabitants'
+    },
+    area: {
+      fr: '385 207 km²',
+      en: '385,207 km²'
+    }
   },
-  population: {
-    fr: '5,5 millions d\'habitants',
-    en: '5.5 million inhabitants'
-  },
-  area: {
-    fr: '385 207 km²',
-    en: '385,207 km²'
-  }
-},
 
-Peru: {
-  difficulty: 'hard',
-  cloudinaryFolder: 'countries/peru',
-  totalImages: 160,
-  flag: '🇵🇪',
-  names: ['peru', 'perou', 'pérou'],
-  capital: {
-    fr: 'Lima',
-    en: 'Lima'
+  Peru: {
+    difficulty: 'hard',
+    folder: 'peru',
+    totalImages: 160,
+    flag: '🇵🇪',
+    names: ['peru', 'perou', 'pérou'],
+    capital: {
+      fr: 'Lima',
+      en: 'Lima'
+    },
+    population: {
+      fr: '33 millions d\'habitants',
+      en: '33 million inhabitants'
+    },
+    area: {
+      fr: '1 285 216 km²',
+      en: '1,285,216 km²'
+    }
   },
-  population: {
-    fr: '33 millions d\'habitants',
-    en: '33 million inhabitants'
-  },
-  area: {
-    fr: '1 285 216 km²',
-    en: '1,285,216 km²'
-  }
-},
 
-Russia: {
-  difficulty: 'easy',
-  cloudinaryFolder: 'countries/russia',
-  totalImages: 223,
-  flag: '🇷🇺',
-  names: ['russia', 'russie'],
-  capital: {
-    fr: 'Moscou',
-    en: 'Moscow'
+  Russia: {
+    difficulty: 'easy',
+    folder: 'russia',
+    totalImages: 223,
+    flag: '🇷🇺',
+    names: ['russia', 'russie'],
+    capital: {
+      fr: 'Moscou',
+      en: 'Moscow'
+    },
+    population: {
+      fr: '144 millions d\'habitants',
+      en: '144 million inhabitants'
+    },
+    area: {
+      fr: '17 098 246 km²',
+      en: '17,098,246 km²'
+    }
   },
-  population: {
-    fr: '144 millions d\'habitants',
-    en: '144 million inhabitants'
-  },
-  area: {
-    fr: '17 098 246 km²',
-    en: '17,098,246 km²'
-  }
-},
 
-Sweden: {
-  difficulty: 'medium',
-  cloudinaryFolder: 'countries/sweden',
-  totalImages: 181,
-  flag: '🇸🇪',
-  names: ['sweden', 'suede', 'suède'],
-  capital: {
-    fr: 'Stockholm',
-    en: 'Stockholm'
+  Sweden: {
+    difficulty: 'medium',
+    folder: 'sweden',
+    totalImages: 181,
+    flag: '🇸🇪',
+    names: ['sweden', 'suede', 'suède'],
+    capital: {
+      fr: 'Stockholm',
+      en: 'Stockholm'
+    },
+    population: {
+      fr: '10,5 millions d\'habitants',
+      en: '10.5 million inhabitants'
+    },
+    area: {
+      fr: '450 295 km²',
+      en: '450,295 km²'
+    }
   },
-  population: {
-    fr: '10,5 millions d\'habitants',
-    en: '10.5 million inhabitants'
-  },
-  area: {
-    fr: '450 295 km²',
-    en: '450,295 km²'
-  }
-},
 
-Switzerland: {
-  difficulty: 'medium',
-  cloudinaryFolder: 'countries/switzerland',
-  totalImages: 227,
-  flag: '🇨🇭',
-  names: ['switzerland', 'suisse', 'schweiz'],
-  capital: {
-    fr: 'Berne',
-    en: 'Bern'
+  Switzerland: {
+    difficulty: 'medium',
+    folder: 'switzerland',
+    totalImages: 227,
+    flag: '🇨🇭',
+    names: ['switzerland', 'suisse', 'schweiz'],
+    capital: {
+      fr: 'Berne',
+      en: 'Bern'
+    },
+    population: {
+      fr: '8,7 millions d\'habitants',
+      en: '8.7 million inhabitants'
+    },
+    area: {
+      fr: '41 285 km²',
+      en: '41,285 km²'
+    }
   },
-  population: {
-    fr: '8,7 millions d\'habitants',
-    en: '8.7 million inhabitants'
-  },
-  area: {
-    fr: '41 285 km²',
-    en: '41,285 km²'
-  }
-},
 
-Turkey: {
-  difficulty: 'easy',
-  cloudinaryFolder: 'countries/turkey',
-  totalImages: 216,
-  flag: '🇹🇷',
-  names: ['turkey', 'turquie', 'turkiye'],
-  capital: {
-    fr: 'Ankara',
-    en: 'Ankara'
+  Turkey: {
+    difficulty: 'easy',
+    folder: 'turkey',
+    totalImages: 216,
+    flag: '🇹🇷',
+    names: ['turkey', 'turquie', 'turkiye'],
+    capital: {
+      fr: 'Ankara',
+      en: 'Ankara'
+    },
+    population: {
+      fr: '85 millions d\'habitants',
+      en: '85 million inhabitants'
+    },
+    area: {
+      fr: '783 562 km²',
+      en: '783,562 km²'
+    }
   },
-  population: {
-    fr: '85 millions d\'habitants',
-    en: '85 million inhabitants'
-  },
-  area: {
-    fr: '783 562 km²',
-    en: '783,562 km²'
-  }
-},
 
-Vietnam: {
-  difficulty: 'medium',
-  cloudinaryFolder: 'countries/vietnam',
-  totalImages: 189,
-  flag: '🇻🇳',
-  names: ['vietnam', 'viet nam'],
-  capital: {
-    fr: 'Hanoï',
-    en: 'Hanoi'
+  Vietnam: {
+    difficulty: 'medium',
+    folder: 'vietnam',
+    totalImages: 189,
+    flag: '🇻🇳',
+    names: ['vietnam', 'viet nam'],
+    capital: {
+      fr: 'Hanoï',
+      en: 'Hanoi'
+    },
+    population: {
+      fr: '98 millions d\'habitants',
+      en: '98 million inhabitants'
+    },
+    area: {
+      fr: '331 212 km²',
+      en: '331,212 km²'
+    }
   },
-  population: {
-    fr: '98 millions d\'habitants',
-    en: '98 million inhabitants'
-  },
-  area: {
-    fr: '331 212 km²',
-    en: '331,212 km²'
-  }
-},
 };
 
 /**
- * 🖼️ Fonction pour générer des URLs d'images aléatoires
+ * 🖼️ Fonction pour générer des URLs d'images aléatoires depuis Cloudflare R2
  */
 export const getRandomImages = (countryData, count = 100, excludeIds = []) => {
-  const { cloudinaryFolder, totalImages } = countryData;
+  const { folder, totalImages } = countryData;
   
-  if (!cloudinaryFolder || !totalImages) {
+  if (!folder || !totalImages) {
     console.error('❌ Données manquantes:', countryData);
     return [];
   }
@@ -777,16 +780,15 @@ export const getRandomImages = (countryData, count = 100, excludeIds = []) => {
   }
 
   const selectedIds = availableIds.slice(0, Math.min(count, availableIds.length));
-  const cloudName = 'dc4ydqgbz';
 
   return selectedIds.map(id => {
     const paddedId = String(id).padStart(3, '0');
-
-    // 🔥 On reproduit exactement ton chemin doublé
+    
+    // URL Cloudflare R2 avec WebP pour chargement ultra-rapide
     return {
-    id,
-    url: `https://res.cloudinary.com/${cloudName}/image/upload/${cloudinaryFolder}/${paddedId}.jpg`
-  };
+      id,
+      url: `${R2_BASE_URL}/${folder}/${folder}_${paddedId}.webp`
+    };
   });
 };
 

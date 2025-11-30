@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 build/
+.env
+src/*_backup*
+.env

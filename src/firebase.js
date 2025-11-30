@@ -1,5 +1,6 @@
 // firebase.js - Configuration Firebase pour Flash Country (Version avec comptes)
 import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
 import { 
   getAuth, 
   signInAnonymously, 
@@ -31,13 +32,16 @@ const firebaseConfig = {
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  databaseURL: "https://flash-country-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+export const database = getDatabase(app);
 
 // ========================================
 // FONCTIONS D'AUTHENTIFICATION
@@ -91,17 +95,44 @@ export const createAccount = async (email, password, pseudo) => {
 };
 
 /**
- * Se connecter avec email et mot de passe
- * @param {string} email - Email de l'utilisateur
+ * Se connecter avec email OU pseudo
+ * @param {string} emailOrPseudo - Email ou pseudo de l'utilisateur
  * @param {string} password - Mot de passe
  * @returns {Promise<Object>} Informations de l'utilisateur
  */
-export const loginWithEmail = async (email, password) => {
+export const loginWithEmail = async (emailOrPseudo, password) => {
   try {
+    let email = emailOrPseudo;
+    
+    // Vérifie si c'est un email (contient @) ou un pseudo
+    if (!emailOrPseudo.includes('@')) {
+      console.log('🔍 Recherche de l\'email pour le pseudo:', emailOrPseudo);
+      
+      // Cherche l'utilisateur par pseudo dans Firestore
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('pseudo', '==', emailOrPseudo), limit(1));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        throw new Error('Pseudo introuvable');
+      }
+      
+      // Récupère l'email associé
+      const userDoc = querySnapshot.docs[0];
+      email = userDoc.data().email;
+      console.log('✅ Email trouvé:', email);
+    }
+    
+    // Connexion avec l'email
     const result = await signInWithEmailAndPassword(auth, email, password);
     return result.user;
   } catch (error) {
     console.error("Erreur de connexion:", error);
+    
+    // Message d'erreur personnalisé
+    if (error.message === 'Pseudo introuvable') {
+      throw new Error('Pseudo ou mot de passe incorrect');
+    }
     throw error;
   }
 };

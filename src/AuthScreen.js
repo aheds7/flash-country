@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { loginAsGuest, createAccount, loginWithEmail } from './firebase';
 import './AuthScreen.css';
+import { EmojiText } from './emojiParser';
 
 const AuthScreen = ({ onLogin, translations, currentLang }) => {
   const [authMode, setAuthMode] = useState('choice'); // 'choice', 'guest', 'login', 'signup'
@@ -80,38 +81,35 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
     }
   };
 
-  // Connexion avec email
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    
-    if (!email.includes('@')) {
-      setError(translations[currentLang].emailError || 'Email invalide');
-      return;
-    }
+// Connexion avec email OU pseudo
+const handleLogin = async (e) => {
+  e.preventDefault();
+  
+  // ✅ Plus de validation email ici !
+  
+  if (password.length < 6) {
+    setError(translations[currentLang].passwordError || 'Le mot de passe doit contenir au moins 6 caractères');
+    return;
+  }
 
-    if (password.length < 6) {
-      setError(translations[currentLang].passwordError || 'Le mot de passe doit contenir au moins 6 caractères');
-      return;
-    }
+  setIsLoading(true);
+  setError('');
 
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const user = await loginWithEmail(email, password);
-      const userPseudo = user.displayName || email.split('@')[0];
-      localStorage.setItem('userPseudo', userPseudo);
-      onLogin(user, userPseudo);
-    } catch (err) {
-      console.error('Erreur de connexion:', err);
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError(translations[currentLang].wrongCredentials || 'Email ou mot de passe incorrect');
-      } else {
-        setError(translations[currentLang].loginError || 'Erreur de connexion');
-      }
-      setIsLoading(false);
+  try {
+    const user = await loginWithEmail(email, password);
+    const userPseudo = user.displayName || email.split('@')[0];
+    localStorage.setItem('userPseudo', userPseudo);
+    onLogin(user, userPseudo);
+  } catch (err) {
+    console.error('Erreur de connexion:', err);
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.message === 'Pseudo ou mot de passe incorrect') {
+      setError(translations[currentLang].wrongCredentials || 'Identifiant ou mot de passe incorrect');
+    } else {
+      setError(translations[currentLang].loginError || 'Erreur de connexion');
     }
-  };
+    setIsLoading(false);
+  }
+};
 
   // Réinitialiser le formulaire
   const resetForm = () => {
@@ -127,7 +125,7 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
     return (
       <div className="authContainer">
         <div className="authCard">
-          <h1 className="authTitle">🌍 Flash Country</h1>
+          <h1 className="authTitle"><EmojiText>🌍</EmojiText> Flash Country</h1>
           <p className="authSubtitle">
             {translations[currentLang].welcomeMessage || 'Bienvenue ! Comment veux-tu jouer ?'}
           </p>
@@ -137,7 +135,7 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
               className="authChoiceButton guest"
               onClick={() => setAuthMode('guest')}
             >
-              <span className="authChoiceIcon">🎮</span>
+              <span className="authChoiceIcon"><EmojiText>🎮</EmojiText></span>
               <h3>{translations[currentLang].playAsGuest || 'Jouer en invité'}</h3>
               <p>{translations[currentLang].guestDesc || 'Joue rapidement sans créer de compte'}</p>
             </button>
@@ -176,7 +174,7 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
             ← {translations[currentLang].back || 'Retour'}
           </button>
 
-          <h1 className="authTitle">🎮 {translations[currentLang].playAsGuest || 'Jouer en invité'}</h1>
+          <h1 className="authTitle"><EmojiText>🎮</EmojiText> {translations[currentLang].playAsGuest || 'Jouer en invité'}</h1>
           <p className="authSubtitle">
             {translations[currentLang].guestInfo || 'Entre ton pseudo pour commencer'}
           </p>
@@ -208,7 +206,7 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
           </form>
 
           <p className="authFooterText">
-            💡 {translations[currentLang].guestWarning || 'En mode invité, ta progression ne sera pas sauvegardée'}
+            <EmojiText>💡</EmojiText> {translations[currentLang].guestWarning || 'En mode invité, ta progression ne sera pas sauvegardée'}
           </p>
     <p style={{marginTop: '30px', fontSize: '11px', opacity: 0.5, textAlign: 'center'}}>
             En utilisant ce site, vous acceptez notre{' '}
@@ -235,16 +233,16 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
             ← {translations[currentLang].back || 'Retour'}
           </button>
 
-          <h1 className="authTitle">👤 {translations[currentLang].login || 'Connexion'}</h1>
+          <h1 className="authTitle"><EmojiText>👤</EmojiText> {translations[currentLang].login || 'Connexion'}</h1>
           <p className="authSubtitle">
             {translations[currentLang].loginSubtitle || 'Connecte-toi à ton compte'}
           </p>
 
           <form onSubmit={handleLogin} className="authForm">
             <input
-              type="email"
-              className="authInput"
-              placeholder={translations[currentLang].emailPlaceholder || 'Email'}
+              type="text"
+              className="authInput"placeholder={translations[currentLang].emailOrPseudoPlaceholder || 'Email ou pseudo'}
+              
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
@@ -305,7 +303,7 @@ const AuthScreen = ({ onLogin, translations, currentLang }) => {
             ← {translations[currentLang].back || 'Retour'}
           </button>
 
-          <h1 className="authTitle">✨ {translations[currentLang].signup || 'Créer un compte'}</h1>
+          <h1 className="authTitle"><EmojiText>✨</EmojiText> {translations[currentLang].signup || 'Créer un compte'}</h1>
           <p className="authSubtitle">
             {translations[currentLang].signupSubtitle || 'Rejoins la communauté Flash Country !'}
           </p>
