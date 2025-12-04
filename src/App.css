@@ -1,24 +1,228 @@
 /* ========================================
-   FLASH COUNTRY - Styles CSS Unifiés
-   Design cohérent inspiré des pages d'accueil
+   FLASH COUNTRY - Design Moderne Glassmorphism
+   Mode clair et sombre stylés
    ======================================== */
 
-/* Variables CSS */
+/* Variables pour le mode sombre (par défaut) */
 :root {
-  --primary-color: #4CAF50;
-  --secondary-color: #2196F3;
-  --danger-color: #f44336;
-  --warning-color: #FF9800;
-  --dark-bg: #1a1a1a;
-  --card-bg: #2a2a2a;
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #13131a;
+  --bg-card: rgba(30, 30, 40, 0.7);
   --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --border-radius: 12px;
-  --transition-speed: 0.3s;
+  --text-secondary: #a0a0b0;
+  --text-muted: #6b6b7b;
+  --accent-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --accent-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --accent-tertiary: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --warning: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+  --danger: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  --border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow: rgba(0, 0, 0, 0.5);
+  --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Variables pour le mode clair */
+/* ========================================
+   MODE CLAIR STYLÉ
+   REMPLACE la section [data-theme="light"] dans ton App.css
+   ======================================== */
+
+/* Variables pour le mode clair */
+[data-theme="light"] {
+  --bg-primary: #f8f9fc;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-primary: #1a1d2e;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border: rgba(99, 102, 241, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(99, 102, 241, 0.15);
+  --shadow: rgba(99, 102, 241, 0.15);
 }
 
 /* ========================================
-   BASE & RESET
+   FOND MODE CLAIR (plus vibrant)
+   AJOUTE après les variables [data-theme="light"]
+   ======================================== */
+
+/* Fond dégradé subtil pour le mode clair */
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #f8f9fc 0%, #e8eaf6 50%, #f3e5f5 100%);
+  background-size: 400% 400%;
+  animation: lightGradientShift 20s ease infinite;
+}
+
+@keyframes lightGradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Bulles colorées pour le mode clair */
+[data-theme="light"] body::before {
+  background: 
+    radial-gradient(ellipse at 15% 20%, rgba(99, 102, 241, 0.08), transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(236, 72, 153, 0.08), transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.06), transparent 60%);
+  filter: blur(80px);
+  opacity: 1;
+}
+
+/* Points lumineux + grille pour mode clair */
+[data-theme="light"] body::after {
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 2%),
+    radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.12) 0%, transparent 2%),
+    radial-gradient(circle at 60% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 2%),
+    radial-gradient(circle at 30% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 90% 40%, rgba(236, 72, 153, 0.08) 0%, transparent 2%),
+    linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+  background-size: 
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    50px 50px,
+    50px 50px;
+  opacity: 1;
+}
+
+/* ========================================
+   CARTES MODE CLAIR
+   ======================================== */
+
+[data-theme="light"] .modeCard,
+[data-theme="light"] .difficultyCard,
+[data-theme="light"] .roundEndTop,
+[data-theme="light"] .countryInfo,
+[data-theme="light"] .nav-bar {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+}
+
+[data-theme="light"] .modeCard:hover,
+[data-theme="light"] .difficultyCard:hover {
+  box-shadow: 0 16px 48px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Carte PvP mode clair */
+[data-theme="light"] .modeCard.pvp {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(235, 51, 73, 0.15);
+}
+
+[data-theme="light"] .modeCard.pvp:hover {
+  box-shadow: 0 16px 48px rgba(235, 51, 73, 0.2);
+  border-color: rgba(235, 51, 73, 0.3);
+}
+
+/* ========================================
+   BOUTONS MODE CLAIR
+   ======================================== */
+
+[data-theme="light"] .button {
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="light"] .button:hover {
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="light"] .langButton,
+[data-theme="light"] .nav-button,
+[data-theme="light"] .theme-toggle {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] .langButton:hover,
+[data-theme="light"] .nav-button:hover,
+[data-theme="light"] .theme-toggle:hover {
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .langButton.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+/* ========================================
+   INPUT MODE CLAIR
+   ======================================== */
+
+[data-theme="light"] .input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.05);
+}
+
+[data-theme="light"] .input:focus {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* ========================================
+   IMAGE CONTAINER MODE CLAIR
+   ======================================== */
+
+[data-theme="light"] .imageContainer {
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+}
+
+/* ========================================
+   TITRES MODE CLAIR (plus vibrants)
+   ======================================== */
+
+[data-theme="light"] .title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .question {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .countdown {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   SCORES MODE CLAIR
+   ======================================== */
+
+[data-theme="light"] .finalScore {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   RESET & BASE
    ======================================== */
 * {
   margin: 0;
@@ -27,16 +231,256 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+  background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
-  max-height: 100vh;
-  overflow: hidden;
+  transition: background-color var(--transition), color var(--transition);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Arrière-plan animé avec bulles flottantes */
+/* ========================================
+   COPIE CE CODE DIRECTEMENT
+   Remplace body::before et body::after dans ton App.css
+   ======================================== */
+
+/* Fond fixe avec dégradés subtils */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at 15% 20%, rgba(102, 126, 234, 0.12), transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(245, 87, 108, 0.12), transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(79, 172, 254, 0.08), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+  animation: gentlePulse 15s ease-in-out infinite;
+}
+
+/* Animation ultra-douce - juste un pulse d'opacité */
+@keyframes gentlePulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Particules fixes (points lumineux) + Grille */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 2%),
+    radial-gradient(circle at 80% 70%, rgba(245, 87, 108, 0.15) 0%, transparent 2%),
+    radial-gradient(circle at 60% 20%, rgba(79, 172, 254, 0.12) 0%, transparent 2%),
+    radial-gradient(circle at 30% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 2%),
+    radial-gradient(circle at 90% 40%, rgba(245, 87, 108, 0.1) 0%, transparent 2%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    50px 50px,
+    50px 50px;
+  pointer-events: none;
+  z-index: 0;
+  animation: twinkle 8s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Mode clair : atténuer les effets */
+[data-theme="light"] body::before {
+  opacity: 0.3;
+}
+
+[data-theme="light"] body::after {
+  opacity: 0.15;
+}
+
+/* Effet de grille en arrière-plan (mode sombre uniquement) */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+}
+
+[data-theme="dark"] body::after {
+  opacity: 1;
 }
 
 /* ========================================
-   CONTENEUR PRINCIPAL
+   NAVIGATION BAR (NOUVELLE!)
+   ======================================== */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1000;
+  box-shadow: 0 4px 30px var(--shadow);
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ========================================
+   BUTTONS MODERNISÉS
+   ======================================== */
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.theme-toggle:hover::before {
+  opacity: 0.2;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.langButton,
+.nav-button {
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.langButton::before,
+.nav-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.langButton:hover,
+.nav-button:hover {
+  transform: translateY(-2px);
+  color: var(--text-primary);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+}
+
+.langButton:hover::before,
+.nav-button:hover::before {
+  opacity: 0.15;
+}
+
+.langButton.active {
+  background: var(--accent-primary);
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.langButton.active::before {
+  opacity: 1;
+}
+
+.langButton span,
+.nav-button span {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   CONTAINER
    ======================================== */
 .container {
   display: flex;
@@ -44,403 +488,107 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  max-height: 100vh;
-  padding: 15px;
-  text-align: center;
-  animation: fadeIn 0.5s ease-in;
-  overflow-y: auto;
+  padding: 100px 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Supprime l'ancienne languageSelector */
+.languageSelector {
+  display: none;
 }
 
 /* ========================================
-   TYPOGRAPHIE (STYLE DES 2 PREMIÈRES PAGES)
+   TYPOGRAPHIE STYLISÉE
    ======================================== */
 .title {
   font-size: 3.5rem;
-  font-weight: bold;
-  margin-bottom: 40px;
-  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: var(--accent-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
-  animation: pulse 2s ease-in-out infinite;
+  letter-spacing: -0.03em;
+  text-align: center;
+  position: relative;
+  animation: shimmer 3s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes shimmer {
   0%, 100% {
-    transform: scale(1);
+    opacity: 1;
   }
   50% {
-    transform: scale(1.05);
+    opacity: 0.8;
   }
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: var(--accent-primary);
+  border-radius: 2px;
 }
 
 .subtitle {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   color: var(--text-secondary);
-  margin-bottom: 50px;
-  font-weight: 300;
+  margin-bottom: 48px;
+  font-weight: 400;
+  text-align: center;
 }
 
 .question {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
   color: var(--text-primary);
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .round {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .roundLarge {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--text-secondary);
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .countdown {
   font-size: 8rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  animation: countdownPulse 1s ease-in-out;
+  font-weight: 900;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  animation: countdownPulse 1s ease-out;
 }
 
 @keyframes countdownPulse {
   0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* ========================================
-   SÉLECTEUR DE LANGUE
-   ======================================== */
-.languageSelector {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-  z-index: 1000;
-}
-
-.langButton {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border: 2px solid var(--text-secondary);
-  background-color: transparent;
-  color: var(--text-primary);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all var(--transition-speed) ease;
-  font-weight: 600;
-}
-
-.langButton:hover {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-}
-
-.langButton.active {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
-}
-
-/* ========================================
-   CARTES UNIFIÉES (MODE + DIFFICULTÉ)
-   Style cohérent pour toutes les pages
-   ======================================== */
-.modeContainer,
-.difficultyContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
-  max-width: 900px;
-  margin-top: 20px;
-}
-
-/* Style unifié pour TOUTES les cartes */
-.modeCard,
-.difficultyCard {
-  background-color: var(--card-bg);
-  border: 3px solid transparent;
-  border-radius: var(--border-radius);
-  padding: 40px 30px;
-  width: 250px;
-  cursor: pointer;
-  transition: all var(--transition-speed) ease;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-}
-
-.modeCard::before,
-.difficultyCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
-  opacity: 0;
-  transition: opacity var(--transition-speed) ease;
-  z-index: 0;
-}
-
-.modeCard:hover::before,
-.difficultyCard:hover::before {
-  opacity: 1;
-}
-
-.modeCard:hover,
-.difficultyCard:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.3);
-}
-
-/* Effet de surbrillance identique pour toutes les cartes */
-.modeCard::after,
-.difficultyCard::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  transform: rotate(45deg);
-  transition: all 0.5s ease;
-  z-index: 1;
-}
-
-.modeCard:hover::after,
-.difficultyCard:hover::after {
-  left: 100%;
-}
-
-/* Titres des cartes - style unifié */
-.modeCard h2,
-.difficultyCard h2 {
-  font-size: 2rem;
-  margin-bottom: 15px;
-  position: relative;
-  z-index: 2;
-  font-weight: bold;
-}
-
-/* Couleurs spécifiques par défaut (vert pour tout) */
-.modeCard h2,
-.difficultyCard h2 {
-  color: var(--primary-color);
-}
-
-/* Hover avec bordures colorées selon le type */
-.modeCard:hover {
-  border-color: var(--primary-color);
-}
-
-.difficultyCard.easy:hover {
-  border-color: var(--primary-color);
-  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
-}
-
-.difficultyCard.easy h2 {
-  color: var(--primary-color);
-}
-
-.difficultyCard.medium:hover {
-  border-color: var(--warning-color);
-  box-shadow: 0 15px 40px rgba(255, 152, 0, 0.4);
-}
-
-.difficultyCard.medium h2 {
-  color: var(--warning-color);
-}
-
-.difficultyCard.hard:hover {
-  border-color: var(--danger-color);
-  box-shadow: 0 15px 40px rgba(244, 67, 54, 0.4);
-}
-
-.difficultyCard.hard h2 {
-  color: var(--danger-color);
-}
-
-/* Description des cartes */
-.modeCard p,
-.difficultyCard p {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  position: relative;
-  z-index: 2;
-}
-
-/* ========================================
-   ZONE DE JEU
-   ======================================== */
-.gameContent {
-  width: 100%;
-  max-width: 700px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: slideInFromBottom 0.5s ease;
-}
-
-@keyframes slideInFromBottom {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.gameHeader {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-/* Conteneur d'image */
-.imageContainer {
-  width: 100%;
-  max-width: 600px;
-  height: 400px;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  margin-bottom: 30px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  position: relative;
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-speed) ease;
-}
-
-.imageContainer:hover .image {
-  transform: scale(1.05);
-}
-
-/* ========================================
-   ZONE DE SAISIE
-   ======================================== */
-.inputContainer {
-  display: flex;
-  gap: 15px;
-  width: 100%;
-  max-width: 600px;
-  margin-top: 20px;
-}
-
-.input {
-  flex: 1;
-  padding: 18px 25px;
-  font-size: 1.2rem;
-  border: 3px solid var(--card-bg);
-  border-radius: var(--border-radius);
-  background-color: var(--card-bg);
-  color: var(--text-primary);
-  outline: none;
-  transition: all var(--transition-speed) ease;
-}
-
-.input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
-}
-
-.input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.input::placeholder {
-  color: var(--text-secondary);
-}
-
-.submitButton {
-  padding: 18px 30px;
-  font-size: 1.5rem;
-  background-color: var(--primary-color);
-  color: var(--text-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all var(--transition-speed) ease;
-  font-weight: bold;
-  min-width: 70px;
-}
-
-.submitButton:hover:not(:disabled) {
-  background-color: #45a049;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-}
-
-.submitButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ========================================
-   ÉCRAN FIN DE ROUND
-   ======================================== */
-.roundEndTop {
-  background-color: var(--card-bg);
-  border-radius: var(--border-radius);
-  padding: 30px 40px;
-  max-width: 600px;
-  margin-bottom: 20px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-}
-
-.resultTitle {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-  animation: bounceIn 0.6s ease;
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0);
+    transform: scale(0.8);
     opacity: 0;
   }
   50% {
@@ -452,73 +600,341 @@ body {
   }
 }
 
+/* ========================================
+   CARDS GLASSMORPHISM
+   ======================================== */
+.modeContainer,
+.difficultyContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 900px;
+  margin-top: 32px;
+}
+
+.modeCard,
+.difficultyCard {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 36px 28px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.modeCard::before,
+.difficultyCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.modeCard:hover,
+.difficultyCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.modeCard:hover::before,
+.difficultyCard:hover::before {
+  opacity: 0.1;
+}
+
+.modeCard h2,
+.difficultyCard h2 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.modeCard p,
+.difficultyCard p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* Couleurs spécifiques pour les difficultés */
+.difficultyCard.easy::before {
+  background: var(--success);
+}
+
+.difficultyCard.easy:hover {
+  box-shadow: 0 20px 60px rgba(17, 153, 142, 0.3);
+  border-color: rgba(17, 153, 142, 0.5);
+}
+
+.difficultyCard.easy h2 {
+  background: var(--success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.difficultyCard.medium::before {
+  background: var(--warning);
+}
+
+.difficultyCard.medium:hover {
+  box-shadow: 0 20px 60px rgba(242, 153, 74, 0.3);
+  border-color: rgba(242, 153, 74, 0.5);
+}
+
+.difficultyCard.medium h2 {
+  background: var(--warning);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.difficultyCard.hard::before {
+  background: var(--danger);
+}
+
+.difficultyCard.hard:hover {
+  box-shadow: 0 20px 60px rgba(235, 51, 73, 0.3);
+  border-color: rgba(235, 51, 73, 0.5);
+}
+
+.difficultyCard.hard h2 {
+  background: var(--danger);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   GAME AREA
+   ======================================== */
+.gameContent {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gameHeader {
+  width: 100%;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.imageContainer {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-secondary);
+  position: relative;
+}
+
+.imageContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.2) 100%);
+  pointer-events: none;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition);
+}
+
+.imageContainer:hover .image {
+  transform: scale(1.05);
+}
+
+/* ========================================
+   INPUT & SUBMIT GLASSMORPHISM
+   ======================================== */
+.inputContainer {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 24px;
+}
+
+.input {
+  flex: 1;
+  padding: 18px 24px;
+  font-size: 1.125rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition);
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.input:focus {
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.submitButton {
+  padding: 18px 32px;
+  font-size: 1.5rem;
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-weight: 700;
+  min-width: 80px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   ROUND END SCREEN GLASSMORPHISM
+   ======================================== */
+.roundEndTop {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 48px 40px;
+  max-width: 600px;
+  margin-bottom: 24px;
+  text-align: center;
+  box-shadow: 0 20px 60px var(--shadow);
+}
+
+.resultTitle {
+  font-size: 2.25rem;
+  margin-bottom: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
 .wrongAnswer {
-  font-size: 1.1rem;
-  color: var(--danger-color);
-  margin-bottom: 15px;
+  font-size: 0.9375rem;
+  background: var(--danger);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
   font-style: italic;
+  font-weight: 600;
 }
 
 .flag {
   font-size: 5rem;
-  margin: 20px 0;
-  animation: rotateIn 0.8s ease;
+  margin: 24px 0;
+  line-height: 1;
+  animation: flagPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-@keyframes rotateIn {
+@keyframes flagPop {
   0% {
-    transform: rotate(-180deg) scale(0);
+    transform: scale(0) rotate(-180deg);
     opacity: 0;
   }
   100% {
-    transform: rotate(0) scale(1);
+    transform: scale(1) rotate(0);
     opacity: 1;
   }
 }
 
 .countryName {
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .score {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin-bottom: 10px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: var(--success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
 }
 
 .totalScore {
-  font-size: 1.3rem;
+  font-size: 1.125rem;
   color: var(--text-secondary);
-  margin-bottom: 20px;
+  margin-bottom: 28px;
+  font-weight: 500;
 }
 
 .finalScore {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: var(--primary-color);
+  font-size: 3.5rem;
+  font-weight: 900;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 40px;
 }
 
-/* Informations du pays */
+/* Country Info Glassmorphism */
 .countryInfo {
-  background-color: var(--card-bg);
-  border-radius: var(--border-radius);
-  padding: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px;
   max-width: 600px;
-  text-align: left;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .countryInfo p {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  color: var(--text-primary);
+  font-size: 1rem;
+  margin-bottom: 14px;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
+  gap: 12px;
+  font-weight: 500;
 }
 
 .countryInfo p:last-child {
@@ -526,268 +942,85 @@ body {
 }
 
 .countryInfo p::before {
-  content: '→';
-  color: var(--primary-color);
-  font-weight: bold;
-  margin-right: 10px;
-  font-size: 1.5rem;
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* ========================================
-   BOUTONS
+   BUTTONS MODERNISÉS
    ======================================== */
 .button {
-  padding: 15px 40px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  background-color: var(--primary-color);
-  color: var(--text-primary);
+  padding: 16px 40px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  background: var(--accent-primary);
+  color: #ffffff;
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all var(--transition-speed) ease;
+  transition: all var(--transition);
   margin: 8px;
-  box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .button:hover {
-  background-color: #45a049;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(102, 126, 234, 0.5);
+}
+
+.button span {
+  position: relative;
+  z-index: 1;
 }
 
 .button.secondary {
-  background-color: transparent;
-  border: 3px solid var(--primary-color);
-  color: var(--primary-color);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
   box-shadow: none;
 }
 
 .button.secondary:hover {
-  background-color: var(--primary-color);
-  color: var(--text-primary);
-  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
 }
 
 /* ========================================
-   ÉCRAN DE CHARGEMENT
+   LOADING
    ======================================== */
 .loading {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--text-secondary);
-  animation: loadingPulse 1.5s ease-in-out infinite;
 }
 
-@keyframes loadingPulse {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
-
-/* Tablettes */
-@media (max-width: 768px) {
-  .title {
-    font-size: 2.5rem;
-  }
-
-  .subtitle {
-    font-size: 1.2rem;
-  }
-
-  .modeCard,
-  .difficultyCard {
-    width: 200px;
-    padding: 30px 20px;
-  }
-
-  .modeCard h2,
-  .difficultyCard h2 {
-    font-size: 1.5rem;
-  }
-
-  .imageContainer {
-    height: 300px;
-  }
-
-  .question {
-    font-size: 1.5rem;
-  }
-
-  .input {
-    font-size: 1rem;
-    padding: 15px 20px;
-  }
-
-  .submitButton {
-    padding: 15px 25px;
-    font-size: 1.2rem;
-  }
-
-  .countryName {
-    font-size: 2rem;
-  }
-
-  .flag {
-    font-size: 4.5rem;
-  }
-}
-
-/* Smartphones */
-@media (max-width: 480px) {
-  .container {
-    padding: 15px;
-  }
-
-  .title {
-    font-size: 2rem;
-    margin-bottom: 30px;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-    margin-bottom: 30px;
-  }
-
-  .languageSelector {
-    top: 10px;
-    right: 10px;
-  }
-
-  .langButton {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-  }
-
-  .modeContainer,
-  .difficultyContainer {
-    gap: 15px;
-  }
-
-  .modeCard,
-  .difficultyCard {
-    width: 100%;
-    max-width: 280px;
-    padding: 25px 20px;
-  }
-
-  .modeCard h2,
-  .difficultyCard h2 {
-    font-size: 1.3rem;
-  }
-
-  .modeCard p,
-  .difficultyCard p {
-    font-size: 1rem;
-  }
-
-  .imageContainer {
-    height: 250px;
-  }
-
-  .question {
-    font-size: 1.2rem;
-  }
-
-  .round,
-  .roundLarge {
-    font-size: 1rem;
-  }
-
-  .countdown {
-    font-size: 5rem;
-  }
-
-  .inputContainer {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .input,
-  .submitButton {
-    width: 100%;
-    font-size: 1rem;
-    padding: 15px;
-  }
-
-  .roundEndTop {
-    padding: 30px 20px;
-  }
-
-  .resultTitle {
-    font-size: 2rem;
-  }
-
-  .flag {
-    font-size: 4rem;
-  }
-
-  .countryName {
-    font-size: 1.5rem;
-  }
-
-  .score {
-    font-size: 1.5rem;
-  }
-
-  .totalScore {
-    font-size: 1.2rem;
-  }
-
-  .finalScore {
-    font-size: 2rem;
-  }
-
-  .countryInfo {
-    padding: 20px;
-  }
-
-  .countryInfo p {
-    font-size: 1rem;
-  }
-
-  .button {
-    padding: 15px 35px;
-    font-size: 1.1rem;
-    width: 100%;
-    max-width: 300px;
-  }
-}
-
-/* Très petits écrans */
-@media (max-width: 360px) {
-  .title {
-    font-size: 1.8rem;
-  }
-
-  .imageContainer {
-    height: 200px;
-  }
-
-  .modeCard,
-  .difficultyCard {
-    width: 100%;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-
-/* Style pour l'écran de chargement */
 .loading-screen {
   display: flex;
   flex-direction: column;
@@ -799,50 +1032,58 @@ body {
 
 .loading-progress-bar {
   width: 100%;
-  max-width: 600px;
-  margin-bottom: 20px;
+  max-width: 500px;
+  margin-bottom: 24px;
 }
 
 .loading-progress-container {
   width: 100%;
-  height: 30px;
-  background-color: #333;
-  border-radius: 15px;
+  height: 8px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 4px;
   overflow: hidden;
-  border: 2px solid #555;
+  border: 1px solid var(--glass-border);
 }
 
 .loading-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #45a049);
-  transition: width 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: bold;
-  font-size: 14px;
+  background: var(--accent-primary);
+  transition: width var(--transition);
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
 }
 
 .loading-counter {
-  color: #aaa;
-  font-size: 16px;
-  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 12px;
+  text-align: center;
 }
 
 .loading-dots {
-  margin-top: 30px;
+  margin-top: 32px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }
 
 .loading-dot {
-  width: 15px;
-  height: 15px;
-  background-color: #4CAF50;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-primary);
   border-radius: 50%;
-  animation: pulse 1.4s ease-in-out infinite;
+  animation: dotBounce 1.4s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+}
+
+@keyframes dotBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 .loading-dot:nth-child(1) {
@@ -857,7 +1098,9 @@ body {
   animation-delay: 0.4s;
 }
 
-/* Style pour les emojis Twemoji */
+/* ========================================
+   EMOJI STYLES
+   ======================================== */
 img.emoji {
   height: 1em;
   width: 1em;
@@ -866,22 +1109,171 @@ img.emoji {
   display: inline-block;
 }
 
-/* Emojis dans les boutons */
 .langButton img.emoji,
-.button img.emoji {
+.button img.emoji,
+.nav-button img.emoji {
   height: 1.2em;
   width: 1.2em;
 }
 
-/* Drapeaux */
 .flag img.emoji {
   height: 80px;
   width: 80px;
 }
 
-/* Emojis dans les titres */
 h1 img.emoji,
 h2 img.emoji {
   height: 1em;
   width: 1em;
+}
+
+.modeCard.pvp {
+  grid-column: 1 / 4;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.modeCard.pvp::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.modeCard.pvp:hover {
+  box-shadow: 0 20px 60px rgba(235, 51, 73, 0.4);
+  border-color: rgba(235, 51, 73, 0.5);
+}
+
+.modeCard.pvp:hover::before {
+  opacity: 0.15;
+}
+
+.modeCard.pvp h2 {
+  color: var(--text-primary);  /* Blanc en mode sombre, noir en mode clair */
+  position: relative;
+  z-index: 1;
+}
+
+.modeCard.pvp p {
+  position: relative;
+  z-index: 1;
+}  
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .nav-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .nav-center {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+
+  .modeContainer,
+  .difficultyContainer {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+
+  .modeCard.pvp {
+  grid-column: 1 / 2;
+}
+
+  .imageContainer {
+    height: 300px;
+  }
+
+  .question {
+    font-size: 1.25rem;
+  }
+
+  .countdown {
+    font-size: 6rem;
+  }
+
+  .container {
+    padding: 90px 16px 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+
+  .modeCard,
+  .difficultyCard {
+    padding: 28px 20px;
+  }
+
+  .imageContainer {
+    height: 250px;
+  }
+
+  .inputContainer {
+    flex-direction: column;
+  }
+
+  .roundEndTop {
+    padding: 32px 24px;
+  }
+
+  .resultTitle {
+    font-size: 1.75rem;
+  }
+
+  .flag {
+    font-size: 4rem;
+  }
+
+  .countryName {
+    font-size: 1.5rem;
+  }
+
+  .button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .nav-bar {
+    padding: 10px 12px;
+  }
+
+  .langButton,
+  .nav-button {
+    padding: 8px 14px;
+    font-size: 0.8125rem;
+  }
+
+  .theme-toggle {
+    width: 40px;
+    height: 40px;
+  }
 }

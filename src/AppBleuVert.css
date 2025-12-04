@@ -1,0 +1,953 @@
+/* ========================================
+   FLASH COUNTRY - Styles CSS Unifiés
+   Design cohérent inspiré des pages d'accueil
+   ======================================== */
+
+/* Variables CSS */
+:root {
+  --primary-color: #4CAF50;
+  --secondary-color: #2196F3;
+  --danger-color: #f44336;
+  --warning-color: #FF9800;
+  --dark-bg: #1a1a1a;
+  --card-bg: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
+}
+
+/* ========================================
+   BASE & RESET
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+  color: var(--text-primary);
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Première particule circulaire */
+body::before {
+  content: '';
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.15) 0%, transparent 70%);
+  filter: blur(60px);
+  top: 10%;
+  left: 10%;
+  animation: float1 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Deuxième particule circulaire */
+body::after {
+  content: '';
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(33, 150, 243, 0.15) 0%, transparent 70%);
+  filter: blur(60px);
+  bottom: 10%;
+  right: 10%;
+  animation: float2 18s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes float1 {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(80px, -60px);
+  }
+  66% {
+    transform: translate(-50px, 70px);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(-70px, 50px);
+  }
+  66% {
+    transform: translate(60px, -80px);
+  }
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   CONTENEUR PRINCIPAL
+   ======================================== */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 15px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   TYPOGRAPHIE (STYLE DES 2 PREMIÈRES PAGES)
+   ======================================== */
+.title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  margin-bottom: 50px;
+  font-weight: 300;
+}
+
+.question {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.round {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.roundLarge {
+  font-size: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.countdown {
+  font-size: 8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  animation: countdownPulse 1s ease-in-out;
+}
+
+@keyframes countdownPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   SÉLECTEUR DE LANGUE
+   ======================================== */
+.languageSelector {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.langButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 2px solid var(--text-secondary);
+  background-color: transparent;
+  color: var(--text-primary);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  font-weight: 600;
+}
+
+.langButton:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.langButton.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+/* ========================================
+   CARTES UNIFIÉES (MODE + DIFFICULTÉ)
+   Style cohérent pour toutes les pages
+   ======================================== */
+.modeContainer,
+.difficultyContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  max-width: 900px;
+  margin-top: 20px;
+}
+
+/* Style unifié pour TOUTES les cartes */
+.modeCard,
+.difficultyCard {
+  background-color: var(--card-bg);
+  border: 3px solid transparent;
+  border-radius: var(--border-radius);
+  padding: 40px 30px;
+  width: 250px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modeCard::before,
+.difficultyCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+  z-index: 0;
+}
+
+.modeCard:hover::before,
+.difficultyCard:hover::before {
+  opacity: 1;
+}
+
+.modeCard:hover,
+.difficultyCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.3);
+}
+
+/* Effet de surbrillance identique pour toutes les cartes */
+.modeCard::after,
+.difficultyCard::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+.modeCard:hover::after,
+.difficultyCard:hover::after {
+  left: 100%;
+}
+
+/* Titres des cartes - style unifié */
+.modeCard h2,
+.difficultyCard h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
+  font-weight: bold;
+}
+
+/* Couleurs spécifiques par défaut (vert pour tout) */
+.modeCard h2,
+.difficultyCard h2 {
+  color: var(--primary-color);
+}
+
+/* Hover avec bordures colorées selon le type */
+.modeCard:hover {
+  border-color: var(--primary-color);
+}
+
+.difficultyCard.easy:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
+}
+
+.difficultyCard.easy h2 {
+  color: var(--primary-color);
+}
+
+.difficultyCard.medium:hover {
+  border-color: var(--warning-color);
+  box-shadow: 0 15px 40px rgba(255, 152, 0, 0.4);
+}
+
+.difficultyCard.medium h2 {
+  color: var(--warning-color);
+}
+
+.difficultyCard.hard:hover {
+  border-color: var(--danger-color);
+  box-shadow: 0 15px 40px rgba(244, 67, 54, 0.4);
+}
+
+.difficultyCard.hard h2 {
+  color: var(--danger-color);
+}
+
+/* Description des cartes */
+.modeCard p,
+.difficultyCard p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 2;
+}
+
+/* ========================================
+   ZONE DE JEU
+   ======================================== */
+.gameContent {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideInFromBottom 0.5s ease;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.gameHeader {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Conteneur d'image */
+.imageContainer {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-speed) ease;
+}
+
+.imageContainer:hover .image {
+  transform: scale(1.05);
+}
+
+/* ========================================
+   ZONE DE SAISIE
+   ======================================== */
+.inputContainer {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+.input {
+  flex: 1;
+  padding: 18px 25px;
+  font-size: 1.2rem;
+  border: 3px solid var(--card-bg);
+  border-radius: var(--border-radius);
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-speed) ease;
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+  color: var(--text-secondary);
+}
+
+.submitButton {
+  padding: 18px 30px;
+  font-size: 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  font-weight: bold;
+  min-width: 70px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #45a049;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   ÉCRAN FIN DE ROUND
+   ======================================== */
+.roundEndTop {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 30px 40px;
+  max-width: 600px;
+  margin-bottom: 20px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+}
+
+.resultTitle {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.wrongAnswer {
+  font-size: 1.1rem;
+  color: var(--danger-color);
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.flag {
+  font-size: 5rem;
+  margin: 20px 0;
+  animation: rotateIn 0.8s ease;
+}
+
+@keyframes rotateIn {
+  0% {
+    transform: rotate(-180deg) scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.countryName {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+}
+
+.score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.totalScore {
+  font-size: 1.3rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.finalScore {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 40px;
+}
+
+/* Informations du pays */
+.countryInfo {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  max-width: 600px;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.countryInfo p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.countryInfo p:last-child {
+  margin-bottom: 0;
+}
+
+.countryInfo p::before {
+  content: '→';
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-right: 10px;
+  font-size: 1.5rem;
+}
+
+/* ========================================
+   BOUTONS
+   ======================================== */
+.button {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  margin: 8px;
+  box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+}
+
+.button:hover {
+  background-color: #45a049;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+}
+
+.button.secondary {
+  background-color: transparent;
+  border: 3px solid var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: none;
+}
+
+.button.secondary:hover {
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+}
+
+/* ========================================
+   ÉCRAN DE CHARGEMENT
+   ======================================== */
+.loading {
+  font-size: 2rem;
+  color: var(--text-secondary);
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablettes */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+  }
+
+  .modeCard,
+  .difficultyCard {
+    width: 200px;
+    padding: 30px 20px;
+  }
+
+  .modeCard h2,
+  .difficultyCard h2 {
+    font-size: 1.5rem;
+  }
+
+  .imageContainer {
+    height: 300px;
+  }
+
+  .question {
+    font-size: 1.5rem;
+  }
+
+  .input {
+    font-size: 1rem;
+    padding: 15px 20px;
+  }
+
+  .submitButton {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+  }
+
+  .countryName {
+    font-size: 2rem;
+  }
+
+  .flag {
+    font-size: 4.5rem;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    margin-bottom: 30px;
+  }
+
+  .languageSelector {
+    top: 10px;
+    right: 10px;
+  }
+
+  .langButton {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+
+  .modeContainer,
+  .difficultyContainer {
+    gap: 15px;
+  }
+
+  .modeCard,
+  .difficultyCard {
+    width: 100%;
+    max-width: 280px;
+    padding: 25px 20px;
+  }
+
+  .modeCard h2,
+  .difficultyCard h2 {
+    font-size: 1.3rem;
+  }
+
+  .modeCard p,
+  .difficultyCard p {
+    font-size: 1rem;
+  }
+
+  .imageContainer {
+    height: 250px;
+  }
+
+  .question {
+    font-size: 1.2rem;
+  }
+
+  .round,
+  .roundLarge {
+    font-size: 1rem;
+  }
+
+  .countdown {
+    font-size: 5rem;
+  }
+
+  .inputContainer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .input,
+  .submitButton {
+    width: 100%;
+    font-size: 1rem;
+    padding: 15px;
+  }
+
+  .roundEndTop {
+    padding: 30px 20px;
+  }
+
+  .resultTitle {
+    font-size: 2rem;
+  }
+
+  .flag {
+    font-size: 4rem;
+  }
+
+  .countryName {
+    font-size: 1.5rem;
+  }
+
+  .score {
+    font-size: 1.5rem;
+  }
+
+  .totalScore {
+    font-size: 1.2rem;
+  }
+
+  .finalScore {
+    font-size: 2rem;
+  }
+
+  .countryInfo {
+    padding: 20px;
+  }
+
+  .countryInfo p {
+    font-size: 1rem;
+  }
+
+  .button {
+    padding: 15px 35px;
+    font-size: 1.1rem;
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 360px) {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .imageContainer {
+    height: 200px;
+  }
+
+  .modeCard,
+  .difficultyCard {
+    width: 100%;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Style pour l'écran de chargement */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.loading-progress-bar {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.loading-progress-container {
+  width: 100%;
+  height: 30px;
+  background-color: #333;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid #555;
+}
+
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #45a049);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.loading-counter {
+  color: #aaa;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.loading-dots {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.loading-dot {
+  width: 15px;
+  height: 15px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Style pour les emojis Twemoji */
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.05em 0 0.1em;
+  vertical-align: -0.1em;
+  display: inline-block;
+}
+
+/* Emojis dans les boutons */
+.langButton img.emoji,
+.button img.emoji {
+  height: 1.2em;
+  width: 1.2em;
+}
+
+/* Drapeaux */
+.flag img.emoji {
+  height: 80px;
+  width: 80px;
+}
+
+/* Emojis dans les titres */
+h1 img.emoji,
+h2 img.emoji {
+  height: 1em;
+  width: 1em;
+}

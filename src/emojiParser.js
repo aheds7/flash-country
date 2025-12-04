@@ -19,7 +19,14 @@ export const parseEmojis = (text) => {
  * Composant React pour afficher du texte avec emojis
  */
 export const EmojiText = ({ children, className = '', style = {} }) => {
-  const htmlContent = parseEmojis(children);
+  // Gérer les cas où children est undefined, null, ou vide
+  if (!children && children !== 0) {
+    return null;
+  }
+  
+  // Convertir en string si ce n'est pas déjà le cas
+  const text = String(children);
+  const htmlContent = parseEmojis(text);
   
   return (
     <span

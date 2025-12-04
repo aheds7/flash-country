@@ -10,6 +10,7 @@ import { addToHistory } from './imageHistory';
 import { useImagePreloader } from './useImagePreloader';
 import { EmojiText } from './emojiParser';
 
+
 const translations = {
   fr: {
     // Jeu existant
@@ -17,8 +18,47 @@ const translations = {
     // Firebase
     welcomeMessage: 'Bienvenue ! Comment veux-tu jouer ?', playAsGuest: 'Jouer en invité', guestDesc: 'Joue rapidement sans créer de compte', withAccount: 'Avec un compte', accountDesc: 'Garde ta progression et tes scores', guestInfo: 'Entre ton pseudo pour commencer', guestWarning: 'En mode invité, ta progression ne sera pas sauvegardée', pseudoPlaceholder: 'Ton pseudo', pseudoError: 'Le pseudo doit contenir au moins 3 caractères', pseudoTooLong: 'Le pseudo ne peut pas dépasser 20 caractères', login: 'Connexion', loginSubtitle: 'Connecte-toi à ton compte', emailPlaceholder: 'Email', emailOrPseudoPlaceholder: 'Email ou pseudo', passwordPlaceholder: 'Mot de passe (min. 6 caractères)', connecting: 'Connexion...', noAccount: 'Pas encore de compte ?', signup: "S'inscrire", signupSubtitle: 'Rejoins la communauté Flash Country !', confirmPasswordPlaceholder: 'Confirmer le mot de passe', creating: 'Création...', createAccount: 'Créer mon compte', alreadyAccount: 'Déjà un compte ?', emailError: 'Email invalide', passwordError: 'Le mot de passe doit contenir au moins 6 caractères', passwordMismatch: 'Les mots de passe ne correspondent pas', emailInUse: 'Cet email est déjà utilisé', weakPassword: 'Mot de passe trop faible', wrongCredentials: 'Identifiant ou mot de passe incorrect', signupError: 'Erreur lors de la création du compte', loginError: 'Erreur de connexion', connectionError: 'Erreur de connexion. Réessayez.', profile: 'Mon Profil', statistics: 'Statistiques', history: 'Historique', bestScore: 'Meilleur score', totalGames: 'Parties jouées', average: 'Moyenne', memberSince: 'Membre depuis', noHistory: 'Aucune partie jouée pour le moment', logout: 'Se déconnecter', leaderboard: '🏆 Classement', viewLeaderboard: 'Voir le classement', allScores: 'Tous', currentSettings: 'Paramètres actuels', noScores: 'Aucun score enregistré', beFirst: 'Sois le premier à jouer dans cette catégorie !', refresh: 'Actualiser', back: 'Retour', startGame: 'Commencer à jouer', pseudoInfo: 'Ton pseudo sera affiché dans le classement',
     // PvP
-    pvpMode: 'MODE PVP', pvpDesc: 'Affrontez un adversaire !',
-    countries: { Spain: 'Espagne', Portugal: 'Portugal', France: 'France', Japan: 'Japon', Australia: 'Australie', Italy: 'Italie', Germany: 'Allemagne', UnitedKingdom: 'Royaume-Uni', Brazil: 'Brésil', Argentina: 'Argentine', Mexico: 'Mexique', Canada: 'Canada', USA: 'États-Unis', China: 'Chine', India: 'Inde', Thailand: 'Thaïlande', Egypt: 'Égypte', Morocco: 'Maroc', SouthAfrica: 'Afrique du Sud', NewZealand: 'Nouvelle-Zélande' }
+    pvpMode: 'FACE A FACE', pvpDesc: 'Affrontez un adversaire !',
+    countries: { 
+      Spain: 'Espagne', 
+      Portugal: 'Portugal', 
+      France: 'France', 
+      Japan: 'Japon', 
+      Australia: 'Australie', 
+      Italy: 'Italie', 
+      Germany: 'Allemagne', 
+      England: 'Angleterre',
+      Brazil: 'Brésil', 
+      Argentina: 'Argentine', 
+      Mexico: 'Mexique', 
+      Canada: 'Canada', 
+      USA: 'États-Unis', 
+      China: 'Chine', 
+      India: 'Inde', 
+      Thailand: 'Thaïlande', 
+      Egypt: 'Égypte', 
+      Morocco: 'Maroc', 
+      SouthAfrica: 'Afrique du Sud', 
+      NewZeeland: 'Nouvelle-Zélande', 
+      Russia: 'Russie', 
+      Greece: 'Grèce',
+      Austria: 'Autriche',
+      Belgium: 'Belgique',
+      Chile: 'Chili',
+      Croatia: 'Croatie',
+      Cuba: 'Cuba',
+      EmiratsArabesUnis: 'Emirats Arabes Unis',
+      Ireland: 'Irlande',
+      Malaysia: 'Malaisie',
+      Netherlands: 'Pays-Bas',
+      Norway: 'Norvège',
+      Peru: 'Pérou',
+      Sweden: 'Suède',
+      Switzerland: 'Suisse',
+      Turkey: 'Turquie',
+      Vietnam: 'Vietnam',
+      England: 'Angleterre'
+    }
   },
   en: {
     // Existing game
@@ -27,7 +67,7 @@ const translations = {
     welcomeMessage: 'Welcome! How do you want to play?', playAsGuest: 'Play as Guest', guestDesc: 'Play quickly without creating an account', withAccount: 'With an Account', accountDesc: 'Keep your progress and scores', guestInfo: 'Enter your nickname to start', guestWarning: 'In guest mode, your progress will not be saved', pseudoPlaceholder: 'Your nickname', pseudoError: 'Nickname must be at least 3 characters', pseudoTooLong: 'Nickname cannot exceed 20 characters', login: 'Login', loginSubtitle: 'Sign in to your account', emailPlaceholder: 'Email', emailOrPseudoPlaceholder: 'Email ou pseudo', passwordPlaceholder: 'Password (min. 6 characters)', connecting: 'Connecting...', noAccount: "Don't have an account?", signup: 'Sign Up', signupSubtitle: 'Join the Flash Country community!', confirmPasswordPlaceholder: 'Confirm password', creating: 'Creating...', createAccount: 'Create my account', alreadyAccount: 'Already have an account?', emailError: 'Invalid email', passwordError: 'Password must be at least 6 characters', passwordMismatch: 'Passwords do not match', emailInUse: 'This email is already in use', weakPassword: 'Password too weak', wrongCredentials: 'Incorrect email or password', signupError: 'Error creating account', loginError: 'Connection error', connectionError: 'Connection error. Try again.', profile: 'My Profile', statistics: 'Statistics', history: 'History', bestScore: 'Best Score', totalGames: 'Games Played', average: 'Average', memberSince: 'Member since', noHistory: 'No games played yet', logout: 'Log Out', leaderboard: '🏆 Leaderboard', viewLeaderboard: 'View Leaderboard', allScores: 'All', currentSettings: 'Current Settings', noScores: 'No scores recorded yet', beFirst: 'Be the first to play in this category!', refresh: 'Refresh', back: 'Back', startGame: 'Start Playing', pseudoInfo: 'Your nickname will be displayed in the leaderboard',
     // PvP
     pvpMode: 'PVP MODE', pvpDesc: 'Challenge an opponent!',
-    countries: { Spain: 'Spain', Portugal: 'Portugal', France: 'France', Japan: 'Japan', Australia: 'Australia', Italy: 'Italy', Germany: 'Germany', UnitedKingdom: 'United Kingdom', Brazil: 'Brazil', Argentina: 'Argentina', Mexico: 'Mexico', Canada: 'Canada', USA: 'USA', China: 'China', India: 'India', Thailand: 'Thailand', Egypt: 'Egypt', Morocco: 'Morocco', SouthAfrica: 'South Africa', NewZealand: 'New Zealand' }
+    countries: { Spain: 'Spain', Portugal: 'Portugal', France: 'France', Japan: 'Japan', Australia: 'Australia', Italy: 'Italy', Germany: 'Germany', England: 'England', Brazil: 'Brazil', Argentina: 'Argentina', Mexico: 'Mexico', Canada: 'Canada', USA: 'USA', China: 'China', India: 'India', Thailand: 'Thailand', Egypt: 'Egypt', Morocco: 'Morocco', SouthAfrica: 'South Africa', NewZealand: 'New Zealand' }
   }
 };
 
@@ -59,6 +99,7 @@ function App() {
   // États jeu existants
   const [gameState, setGameState] = useState('auth');
   const [language, setLanguage] = useState('fr');
+  const [theme, setTheme] = useState('dark');
   const [gameMode, setGameMode] = useState('quick');
   const [difficulty, setDifficulty] = useState('medium');
   const [currentRound, setCurrentRound] = useState(0);
@@ -89,20 +130,39 @@ function App() {
   );
 
   useEffect(() => {
-    const unsubscribe = onAuthChange((firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        const savedPseudo = localStorage.getItem('userPseudo');
-        if (savedPseudo) {
-          setUserPseudo(savedPseudo);
-        }
-      } else {
-        setUser(null);
-        setUserPseudo('');
-      }
-    });
-    return () => unsubscribe();
+  const unsubscribe = onAuthChange((firebaseUser) => {
+    if (firebaseUser) {
+      setUser(firebaseUser);
+      
+      // Récupérer le pseudo
+      const savedPseudo = firebaseUser.displayName || localStorage.getItem('userPseudo') || '';
+      setUserPseudo(savedPseudo);
+      
+      // ✅ REDIRIGER vers le menu si on est sur l'écran auth
+      setGameState(prevState => prevState === 'auth' ? 'modeSelect' : prevState);
+    } else {
+      setUser(null);
+      setUserPseudo('');
+      setGameState('auth');
+    }
+  });
+  
+  return () => unsubscribe();
+}, []);
+
+  useEffect(() => {
+    // Charger le thème sauvegardé
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   const handleLogin = (firebaseUser, pseudo) => {
     setUser(firebaseUser);
@@ -345,18 +405,47 @@ function App() {
   if (gameState === 'modeSelect') {
     screenContent = (
       <div className="container">
-        <div className="languageSelector">
-          <button className={`langButton ${language === 'fr' ? 'active' : ''}`} onClick={() => setLanguage('fr')}>🇫🇷</button>
-          <button className={`langButton ${language === 'en' ? 'active' : ''}`} onClick={() => setLanguage('en')}>🇬🇧</button>
-        </div>
+        <div className="nav-bar">
+          {/* Gauche : Langues */}
+          <div className="nav-left">
+            <button 
+              className={`langButton ${language === 'fr' ? 'active' : ''}`} 
+              onClick={() => setLanguage('fr')}
+            >
+              <span>🇫🇷 FR</span>
+            </button>
+            <button 
+              className={`langButton ${language === 'en' ? 'active' : ''}`} 
+              onClick={() => setLanguage('en')}
+            >
+              <span>🇬🇧 EN</span>
+            </button>
+          </div>
 
-        <div style={{position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '10px', zIndex: 999}}>
-          <button className="langButton" onClick={() => setShowProfile(true)}>
-            👤 {userPseudo}
-          </button>
-          <button className="langButton" onClick={() => setShowLeaderboard(true)}>
-            <EmojiText>{t.leaderboard}</EmojiText>
-          </button>
+          {/* Centre : Profil et Classement */}
+          <div className="nav-center">
+            <button className="nav-button" onClick={() => setShowProfile(true)}>
+              <span>👤 {userPseudo}</span>
+            </button>
+            <button className="nav-button" onClick={() => setShowLeaderboard(true)}>
+              <span><EmojiText>{t.leaderboard}</EmojiText></span>
+            </button>
+          </div>
+
+          {/* Droite : Theme toggle */}
+          <div className="nav-right">
+            <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+              {theme === 'dark' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
         <h1 className="title">{t.appName}</h1>
@@ -376,8 +465,8 @@ function App() {
             <p>{t.marathonDesc}</p>
           </div>
           
-          <div className="modeCard" onClick={() => setShowPvP(true)} style={{backgroundColor: '#e91e63', gridColumn: 'span 3'}}>
-            <h2><EmojiText>⚔️ {t.pvpMode}</EmojiText></h2>
+          <div className="modeCard pvp" onClick={() => setShowPvP(true)}>
+            <h2>{t.pvpMode}</h2>
             <p>{t.pvpDesc}</p>
           </div>
         </div>
@@ -387,8 +476,9 @@ function App() {
 
   if (gameState === 'difficultySelect') {
     screenContent = (
-      <div className="container">
+     <div className="container" style={{paddingTop: '0px', marginTop: '-30px'}}>
         <h1 className="title">{t.difficulty}</h1>
+        <p className="subtitle">&nbsp;</p> 
         
         <div className="difficultyContainer">
           <div className="difficultyCard easy" onClick={() => selectDifficulty('easy')}>
@@ -469,7 +559,7 @@ function App() {
           <div className="flag">
             <EmojiText style={{fontSize: '80px'}}>{countryData.flag}</EmojiText>
           </div>
-          <p className="countryName">{t.countries[currentCountry]}</p>
+          <p className="countryName">{t.countries[currentCountry] || currentCountry}</p>
           <p className="score">{isCorrect ? `+${roundScore} ${t.points}` : `0 ${t.points}`}</p>
           <p className="totalScore">{t.totalScore} {totalScore}</p>
           <button className="button" onClick={nextRound}>
