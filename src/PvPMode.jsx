@@ -3,7 +3,8 @@ import './App.css';
 import { countries as cloudinaryCountries } from './countries';
 import { generatePvPGameConfig, getCurrentImageIndex } from './gameSeed';
 import { ref, update } from 'firebase/database'; 
-import { database } from './firebase';     
+import { database } from './firebase';
+import { useImagePreloader } from './useImagePreloader'; // 🔥 AJOUT
 import {
   createPvPRoom,
   joinPvPRoom,
@@ -22,6 +23,7 @@ import {
   updatePlayerActivity
 } from './firebasePvP';
 
+
 const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   const t = translations[language];
   
@@ -31,6 +33,7 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   const [roomData, setRoomData] = useState(null);
   const [gameConfig, setGameConfig] = useState(null);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
   
   // États du jeu
   const [countdown, setCountdown] = useState(3);
@@ -39,6 +42,18 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
   const [isStressed, setIsStressed] = useState(false);
+  const [roundEndData, setRoundEndData] = useState(null);
+  const [gameEndData, setGameEndData] = useState(null);
+  
+  // 🔥 NOUVEAUX ÉTATS POUR LE PRÉCHARGEMENT
+  const [imagesToPreload, setImagesToPreload] = useState([]);
+  const [shouldPreload, setShouldPreload] = useState(false);
+  
+  // 🔥 HOOK DE PRÉCHARGEMENT
+  const { loaded, loadedCount, totalImages, progress } = useImagePreloader(
+    imagesToPreload,
+    shouldPreload
+  );
   
   // Refs
   const unsubscribeRef = useRef(null);
@@ -47,7 +62,7 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   const timeoutRef = useRef(null);
   const hasAnsweredRef = useRef(false);
   const isProcessingRef = useRef(false);
-  const currentStateRef = useRef('menu'); // Pour éviter les boucles
+  const currentStateRef = useRef('menu');
 
   // Données des joueurs
   const myId = user?.uid;
@@ -122,6 +137,39 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
         }
       }
 
+      // 🔥 VÉRIFIER SI LES 2 SONT PRÊTS POUR LE ROUND SUIVANT (pendant round_end)
+      if (data.status === 'round_end' && currentStateRef.current === 'round_end') {
+        const players = Object.values(data.players || {});
+        const bothReady = players.length === 2 && players.every(p => p.ready);
+        const amIHost = data.players[myId]?.isHost;
+        
+        if (bothReady && amIHost) {
+          console.log('✅ Les 2 joueurs sont prêts pour le round suivant !');
+          const nextRound = data.currentRound + 1;
+          
+          if (nextRound >= data.maxRounds) {
+            console.log('🏁 Partie terminée !');
+            await endGame(roomCode);
+          } else {
+            console.log(`🔄 Passage au round ${nextRound + 1}`);
+            
+            // 🔥 RÉINITIALISER ready POUR TOUS LES JOUEURS
+            const playerIds = Object.keys(data.players);
+            const updates = {
+              status: 'countdown',
+              countdown: 3,
+              currentRound: nextRound
+            };
+            
+            playerIds.forEach(pid => {
+              updates[`players/${pid}/ready`] = false;
+            });
+            
+            await update(ref(database, `pvp_rooms/${roomCode}`), updates);
+          }
+        }
+      }
+
       // VÉRIFIER SI LES 2 ONT RÉPONDU (pendant le jeu)
       if (data.status === 'playing' && currentStateRef.current === 'playing') {
         const players = Object.values(data.players || {});
@@ -130,14 +178,12 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
         
         if (bothAnswered && amIHost && !isProcessingRef.current) {
           console.log('🔔 FIREBASE DÉTECTE: Les 2 ont répondu !');
-          isProcessingRef.current = true; // Empêcher le re-calcul
+          isProcessingRef.current = true;
           
-          // Calculer les scores
           console.log('🏆 ========== CALCUL AUTOMATIQUE DES SCORES ==========');
           
           const playerIds = Object.keys(data.players);
           
-          // Trouve le premier
           let firstPlayerId = null;
           let minTime = Infinity;
           
@@ -151,7 +197,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
           console.log(`⚡ Premier: ${firstPlayerId ? data.players[firstPlayerId].pseudo : 'Aucun'}`);
 
-          // Calcule les scores
           const scores = {};
           for (const pid of playerIds) {
             const p = data.players[pid];
@@ -162,7 +207,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
             await updatePlayerScore(roomCode, pid, scores[pid]);
           }
 
-          // Prépare les résultats
           const roundResults = {};
           for (const pid of playerIds) {
             const p = data.players[pid];
@@ -175,13 +219,11 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
             };
           }
 
-          // Trouve la bonne réponse
           if (gameConfig) {
             const currentRound = data.currentRound;
             const roundConfig = gameConfig.rounds[currentRound];
             const correctCountry = roundConfig.countryName;
 
-            // Termine le round
             console.log('📤 Envoi à Firebase: status="round_end"');
             await update(ref(database, `pvp_rooms/${roomCode}`), {
               status: 'round_end',
@@ -197,17 +239,76 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
         }
       }
 
-      // PROTECTION ANTI-BOUCLE : utiliser la ref au lieu du state
+      // === 🔥 MACHINE À ÉTATS STRICTE (empêche les retours en arrière) ===
+      const stateOrder = ['menu', 'waiting', 'countdown', 'playing', 'round_end', 'game_end'];
+      const getCurrentStateIndex = () => stateOrder.indexOf(currentStateRef.current);
+      const getNewStateIndex = () => stateOrder.indexOf(data.status);
+      
+      // Protection contre les transitions invalides
+      const canTransition = () => {
+        const current = currentStateRef.current;
+        const next = data.status;
+        
+        // Autoriser countdown après round_end (nouveau round)
+        if (current === 'round_end' && next === 'countdown') return true;
+        
+        // 🔥 BLOQUER countdown ou waiting après countdown/playing/round_end
+        if ((current === 'countdown' || current === 'playing' || current === 'round_end') && 
+            (next === 'waiting')) {
+          return false;
+        }
+        
+        // 🔥 BLOQUER round_end si on est déjà en countdown (nouveau round)
+        if (current === 'countdown' && next === 'round_end') return false;
+        
+        // Autoriser les états identiques (updates Firebase)
+        if (current === next) return true;
+        
+        // Autoriser seulement d'avancer dans l'ordre
+        return getNewStateIndex() > getCurrentStateIndex();
+      };
+
+      if (!canTransition()) {
+        console.log(`⚠️ Transition invalide ignorée: ${currentStateRef.current} → ${data.status}`);
+        return; // Ignorer cette mise à jour
+      }
+
+      // COUNTDOWN
       if (data.status === 'countdown' && currentStateRef.current !== 'countdown') {
-        console.log('🔄 Changement: waiting → countdown');
+        console.log('🔄 Changement → countdown');
         currentStateRef.current = 'countdown';
         setPvpState('countdown');
         setCountdown(data.countdown || 3);
-      } else if (data.status === 'playing' && currentStateRef.current !== 'playing') {
-        // NE PAS repasser en playing si on est déjà en round_end
-        console.log('🔄 Changement: countdown → playing');
+        
+        // 🔥 RÉINITIALISER TOUTES LES REFS
+        hasAnsweredRef.current = false;
+        isProcessingRef.current = false;
+        setHasAnswered(false);
+        setUserAnswer('');
+        setIsStressed(false);
+        stopAllTimers();
+        
+        // 🔥 PHASE 3 : CONTINUER le préchargement si pas fini
+        // Le préchargement lancé dans round_end continue automatiquement
+        // On vérifie juste qu'il est bien actif
+        if (gameConfig && !shouldPreload) {
+          const nextRound = data.currentRound || 0;
+          const roundConfig = gameConfig.rounds[nextRound];
+          if (roundConfig && roundConfig.images) {
+            console.log(`🖼️ Préchargement countdown: ${roundConfig.images.length} images`);
+            setImagesToPreload(roundConfig.images);
+            setShouldPreload(true);
+          }
+        }
+      }
+      
+      // PLAYING
+      else if (data.status === 'playing' && currentStateRef.current !== 'playing') {
+        console.log('🔄 Changement → playing');
         currentStateRef.current = 'playing';
         setPvpState('playing');
+        
+        // 🔥 RÉINITIALISER TOUT
         hasAnsweredRef.current = false;
         isProcessingRef.current = false;
         setHasAnswered(false);
@@ -215,16 +316,77 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
         setTimeLeft(30);
         setIsStressed(false);
         setCurrentImageIndex(0);
-      } else if (data.status === 'round_end' && currentStateRef.current !== 'round_end') {
-        console.log('🔄 Changement: playing → round_end');
+        setShouldPreload(false); // Stop le préchargement actuel
+        
+        // 🔥 PHASE 1 : Préchargement LÉGER après 10 secondes de jeu
+        if (gameConfig) {
+          const currentRoundIndex = data.currentRound;
+          const nextRoundIndex = currentRoundIndex + 1;
+          
+          if (nextRoundIndex < gameConfig.rounds.length) {
+            const nextRoundImages = gameConfig.rounds[nextRoundIndex].images;
+            
+            // Attendre 10 secondes avant de commencer (laisser le jeu bien démarrer)
+            setTimeout(() => {
+              // Vérifier qu'on est toujours en train de jouer
+              if (currentStateRef.current === 'playing') {
+                console.log(`🐌 Préchargement LÉGER du round ${nextRoundIndex + 1} (20 premières images)`);
+                // Charger seulement les 20 premières images en mode léger
+                setImagesToPreload(nextRoundImages.slice(0, 20));
+                setShouldPreload(true);
+              }
+            }, 10000); // 10 secondes après le début
+          }
+        }
+      }
+      
+      // ROUND_END
+      else if (data.status === 'round_end' && currentStateRef.current !== 'round_end') {
+        console.log('🔄 Changement → round_end');
         currentStateRef.current = 'round_end';
         setPvpState('round_end');
         stopAllTimers();
-      } else if (data.status === 'game_end' && currentStateRef.current !== 'game_end') {
-        console.log('🔄 Changement: round_end → game_end');
+        
+        // 🔥 CAPTURER LES DONNÉES DU ROUND TERMINÉ
+        setRoundEndData({
+          roundNumber: data.currentRound + 1,
+          lastResult: data.lastRoundResult,
+          myData: { ...data.players[myId] },
+          opponentData: opponentId ? { ...data.players[opponentId] } : null
+        });
+        
+        // 🔥 PHASE 2 : Préchargement INTENSIF de toutes les images
+        if (gameConfig) {
+          const nextRoundIndex = data.currentRound + 1;
+          if (nextRoundIndex < gameConfig.rounds.length) {
+            const nextRoundImages = gameConfig.rounds[nextRoundIndex].images;
+            console.log(`🚀 Préchargement INTENSIF du round ${nextRoundIndex + 1}: ${nextRoundImages.length} images`);
+            setImagesToPreload(nextRoundImages);
+            setShouldPreload(true);
+          }
+        }
+        
+        // 🔥 RÉINITIALISER POUR LE PROCHAIN ROUND
+        hasAnsweredRef.current = false;
+        isProcessingRef.current = false;
+        setHasAnswered(false);
+        setIsStressed(false);
+      }
+      
+      // GAME_END
+      else if (data.status === 'game_end' && currentStateRef.current !== 'game_end') {
+        console.log('🔄 Changement → game_end');
         currentStateRef.current = 'game_end';
         setPvpState('game_end');
         stopAllTimers();
+        
+        // 🔥 CAPTURER LES DONNÉES FINALES (avant que le joueur quitte)
+        setGameEndData({
+          myScore: data.players[myId]?.score || 0,
+          myPseudo: userPseudo,
+          opponentScore: opponentId ? (data.players[opponentId]?.score || 0) : 0,
+          opponentPseudo: opponentId ? (data.players[opponentId]?.pseudo || 'Adversaire') : 'Adversaire'
+        });
       }
     });
 
@@ -254,29 +416,39 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else if (pvpState === 'countdown' && countdown === 0 && myData?.isHost) {
+      console.log(`✅ Démarrage du round`);
       startRound(roomCode, roomData.currentRound);
     }
   }, [pvpState, countdown, myData?.isHost, roomCode, roomData?.currentRound]);
 
-  // DÉTECTION DU MODE STRESS (useEffect séparé)
+  // DÉTECTION DU MODE STRESS
   useEffect(() => {
-    if (pvpState !== 'playing' || hasAnsweredRef.current || currentStateRef.current !== 'playing') return;
+    // 🔥 VÉRIFICATIONS DE SÉCURITÉ
+    if (pvpState !== 'playing') return;
+    if (currentStateRef.current !== 'playing') return;
+    if (hasAnsweredRef.current || hasAnswered) return;
+    if (!roomData?.gameConfig?.roundStartTime) return; // Attendre que le round soit vraiment démarré
     
-    if (opponentData?.hasAnswered && !hasAnsweredRef.current) {
-      console.log('🚨 MODE STRESS ACTIVÉ');
-      setIsStressed(true);
+    // 🔥 VÉRIFIER QUE L'ADVERSAIRE A RÉPONDU PENDANT CE ROUND (pas le précédent)
+    if (opponentData?.hasAnswered && !isStressed) {
+      const roundStartTime = roomData.gameConfig.roundStartTime;
+      const opponentAnswerTime = opponentData.answerTime || 0;
+      
+      // L'adversaire doit avoir répondu APRÈS le début de ce round
+      if (opponentAnswerTime > 0 && opponentAnswerTime < 30) {
+        console.log('🚨 MODE STRESS ACTIVÉ');
+        setIsStressed(true);
+      }
     }
-  }, [pvpState, opponentData?.hasAnswered]);
+  }, [pvpState, opponentData?.hasAnswered, opponentData?.answerTime, hasAnswered, isStressed, roomData?.gameConfig?.roundStartTime]);
 
   // TIMER PRINCIPAL
   useEffect(() => {
-    // VÉRIFICATION CRITIQUE EN PREMIER
     if (hasAnsweredRef.current || isProcessingRef.current || currentStateRef.current !== 'playing') {
       console.log('⏹️ Timer ignoré - déjà répondu');
       return;
     }
     
-    // NE PAS démarrer le timer si on est en round_end
     if (currentStateRef.current === 'round_end' || currentStateRef.current === 'game_end') {
       console.log('⏹️ Timer ignoré - partie terminée');
       return;
@@ -288,7 +460,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     
     console.log('⏱️ Timer démarré');
     const interval = setInterval(() => {
-      // Double vérification à chaque tick
       if (hasAnsweredRef.current || currentStateRef.current !== 'playing') {
         console.log('⏹️ Arrêt du timer - réponse détectée ou changement d\'état');
         clearInterval(interval);
@@ -298,7 +469,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
       const currentTime = Date.now();
       const elapsedSeconds = (currentTime - roundStartTime) / 1000;
       
-      // Mode stress : 10 secondes après la réponse de l'adversaire
       if (opponentData?.hasAnswered) {
         const opponentAnswerTime = opponentData.answerTime || 0;
         const stressDeadline = opponentAnswerTime + 10;
@@ -313,7 +483,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
           return;
         }
       } else {
-        // Mode normal : 30 secondes
         const timeLeftNormal = Math.max(0, 30 - elapsedSeconds);
         setTimeLeft(Math.ceil(timeLeftNormal));
         
@@ -360,12 +529,9 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
       const elapsed = Date.now() - roomData.gameConfig.roundStartTime;
       const index = Math.floor(elapsed / imageChangeInterval);
       
-      if (index < totalImages) {
-        setCurrentImageIndex(index);
-        animationRef.current = requestAnimationFrame(animate);
-      } else {
-        setCurrentImageIndex(totalImages - 1);
-      }
+      // 🔥 BOUCLER EN CONTINU avec modulo
+      setCurrentImageIndex(index % totalImages);
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     animationRef.current = requestAnimationFrame(animate);
@@ -410,8 +576,8 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     try {
       setError('');
       const code = roomCode.toUpperCase().trim();
-      if (code.length !== 4) {
-        setError('Code invalide (4 caractères)');
+      if (code.length !== 5) {
+        setError('Code invalide (5 caractères)');
         return;
       }
       await joinPvPRoom(code, myId, userPseudo);
@@ -428,8 +594,8 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
     try {
       console.log('✅ Marquage comme prêt...');
-      await setPlayerReady(roomCode, myId);
-
+      
+      // 🔥 JUSTE GÉNÉRER LA CONFIG (pas de préchargement ici)
       if (!gameConfig && roomData?.seed) {
         console.log('📦 Génération config avec seed:', roomData.seed);
         const config = generatePvPGameConfig(
@@ -440,8 +606,7 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
         setGameConfig(config);
       }
       
-      // Le countdown sera lancé automatiquement par le listener
-      // quand il détectera que les 2 joueurs sont prêts
+      await setPlayerReady(roomCode, myId);
     } catch (err) {
       console.error('❌ Erreur ready:', err);
     }
@@ -450,7 +615,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   const handleSubmitAnswer = async () => {
     console.log(`🔍 handleSubmitAnswer appelé - hasAnsweredRef=${hasAnsweredRef.current}, isProcessingRef=${isProcessingRef.current}, userAnswer="${userAnswer}"`);
     
-    // TRIPLE PROTECTION
     if (hasAnsweredRef.current || isProcessingRef.current || !userAnswer.trim()) {
       console.log('⚠️ Soumission bloquée');
       return;
@@ -458,12 +622,10 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
     console.log('📝 ========== SOUMISSION RÉPONSE ==========');
     
-    // VERROUILLER IMMÉDIATEMENT
     hasAnsweredRef.current = true;
     setHasAnswered(true);
     console.log('🔒 Verrouillage activé');
     
-    // NETTOYER TOUS LES TIMERS
     stopAllTimers();
     setIsStressed(false);
     console.log('🧹 Timers nettoyés');
@@ -473,7 +635,6 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     const correctCountry = roundConfig.countryName;
     const countryData = cloudinaryCountries[correctCountry];
 
-    // Vérifie la réponse
     const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const normalizedAnswer = removeAccents(userAnswer.toLowerCase().trim());
     const correctNames = countryData.names.map(name => removeAccents(name));
@@ -481,12 +642,10 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
     console.log(`🎯 Réponse: "${userAnswer}" → ${isCorrect ? '✅' : '❌'}`);
 
-    // Temps depuis le début du round
     const roundStartTime = roomData.gameConfig.roundStartTime;
     const actualTimeElapsed = (Date.now() - roundStartTime) / 1000;
     console.log(`⏱️ Temps: ${actualTimeElapsed.toFixed(2)}s`);
 
-    // Soumet la réponse
     await submitAnswer(roomCode, myId, userAnswer, actualTimeElapsed, isCorrect, roundStartTime);
     console.log('✅ Soumis à Firebase');
     console.log('📝 ========================================');
@@ -527,33 +686,8 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
     console.log('➡️ handleNextRound: Joueur prêt pour le round suivant');
     await setPlayerReady(roomCode, myId);
-
-    if (myData?.isHost) {
-      console.log('👑 HOST: Vérification si tout le monde est prêt');
-      const players = roomData.players;
-      const allReady = Object.values(players).every(p => p.ready);
-
-      if (allReady) {
-        const nextRound = roomData.currentRound + 1;
-        console.log(`📈 Round suivant: ${nextRound + 1}/${roomData.maxRounds}`);
-        
-        if (nextRound >= roomData.maxRounds) {
-          console.log('🏁 Partie terminée !');
-          await endGame(roomCode);
-        } else {
-          console.log(`🔄 Passage au round ${nextRound + 1}`);
-          // IMPORTANT: Réinitialiser la ref d'état
-          currentStateRef.current = 'countdown';
-          await update(ref(database, `pvp_rooms/${roomCode}`), {
-            status: 'countdown',
-            countdown: 3,
-            currentRound: nextRound
-          });
-        }
-      } else {
-        console.log('⏳ En attente que l\'adversaire soit prêt');
-      }
-    }
+    
+    // 🔥 La vérification sera faite dans le listener Firebase, pas ici !
   };
 
   const handleLeaveRoom = async () => {
@@ -582,8 +716,8 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
         {error && <p style={{color: '#f44336', marginBottom: '20px'}}>{error}</p>}
 
-        <div className="modeContainer">
-          <div className="modeCard" onClick={handleQuickMatch}>
+        <div className="pvp-menu-container">
+          <div className="pvp-menu-card" onClick={handleQuickMatch}>
             <h2>🎲 MATCH RAPIDE</h2>
             <p>Trouve automatiquement un adversaire</p>
           </div>
@@ -594,19 +728,34 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
           </div>
         </div>
 
-        <div style={{marginTop: '30px', width: '100%', maxWidth: '400px'}}>
-          <p style={{color: '#fff', marginBottom: '10px'}}>Ou rejoins une partie avec un code :</p>
-          <div style={{display: 'flex', gap: '10px'}}>
-            <input
-              type="text"
-              className="input"
-              placeholder="CODE (ex: AB12)"
-              value={roomCode}
-              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-              maxLength={4}
-              style={{flex: 1}}
-            />
-            <button className="submitButton" onClick={handleJoinPrivateRoom}>
+        <div className="pvp-join-section">
+          <p>Ou rejoins une partie avec un code :</p>
+          <div className="pvp-join-input-container">
+            <div className="pvp-input-with-paste">
+              <input
+                type="text"
+                className="pvp-join-input"
+                placeholder="CODE"
+                value={roomCode}
+                onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                maxLength={5}
+              />
+              <button 
+                className="pvp-paste-button" 
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    setRoomCode(text.toUpperCase().trim().slice(0, 5));
+                  } catch (err) {
+                    console.error('Erreur copie:', err);
+                  }
+                }}
+                title="Coller"
+              >
+                <span>📋</span>
+              </button>
+            </div>
+            <button className="pvp-join-button" onClick={handleJoinPrivateRoom}>
               Rejoindre
             </button>
           </div>
@@ -621,11 +770,25 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     return (
       <div className="container">
         <div style={{textAlign: 'center'}}>
-          {roomData?.isPrivate && (
-            <div style={{marginBottom: '30px', padding: '20px', backgroundColor: '#1a1a1a', borderRadius: '10px'}}>
-              <p style={{color: '#fff', fontSize: '18px', marginBottom: '10px'}}>Code de la partie :</p>
-              <h1 style={{fontSize: '48px', color: '#4CAF50', letterSpacing: '10px'}}>{roomCode}</h1>
-              <p style={{color: '#888', fontSize: '14px'}}>Partage ce code avec ton adversaire</p>
+          {roomData?.isPrivate && !opponentData && (
+            <div className="pvp-room-code-display">
+              <p>Code de la partie :</p>
+              <div className="pvp-room-code-container">
+                <h1 className="pvp-room-code">{roomCode}</h1>
+                <button 
+                  className={`pvp-copy-button ${copied ? 'copied' : ''}`}
+                  onClick={() => {
+                    navigator.clipboard.writeText(roomCode);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                >
+                  {copied ? '✓ Copié' : '📋 Copier'}
+                </button>
+              </div>
+              <p style={{color: 'var(--text-muted)', fontSize: '0.9375rem', marginTop: '12px'}}>
+                Partage ce code avec ton adversaire
+              </p>
             </div>
           )}
 
@@ -785,34 +948,42 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     );
   }
 
-  if (pvpState === 'round_end' && gameConfig) {
-    const currentRound = roomData.currentRound;
-    const roundConfig = gameConfig.rounds[currentRound];
-    const countryName = roundConfig.countryName;
-    const countryData = cloudinaryCountries[countryName];
+  if (pvpState === 'round_end' && gameConfig && roundEndData) {
+    const { roundNumber, lastResult, myData: frozenMyData, opponentData: frozenOpponentData } = roundEndData;
+    
+    if (!lastResult) {
+      return (
+        <div className="container">
+          <p style={{color: '#fff'}}>⏳ Chargement des résultats...</p>
+        </div>
+      );
+    }
+    
+    const correctCountry = lastResult.correctAnswer;
+    const countryData = cloudinaryCountries[correctCountry];
 
-    const myAnswerTime = myData?.answerTime || 30;
-    const opponentAnswerTime = opponentData?.answerTime || 30;
+    const myAnswerTime = frozenMyData?.answerTime || 30;
+    const opponentAnswerTime = frozenOpponentData?.answerTime || 30;
     
-    const myIsFirst = myData?.isCorrect && myAnswerTime < opponentAnswerTime;
-    const opponentIsFirst = opponentData?.isCorrect && opponentAnswerTime < myAnswerTime;
+    const myIsFirst = frozenMyData?.isCorrect && myAnswerTime < opponentAnswerTime;
+    const opponentIsFirst = frozenOpponentData?.isCorrect && opponentAnswerTime < myAnswerTime;
     
-    const myRoundScore = calculateRoundScore(myData?.isCorrect, myAnswerTime, myIsFirst);
-    const opponentRoundScore = calculateRoundScore(opponentData?.isCorrect, opponentAnswerTime, opponentIsFirst);
+    const myRoundScore = calculateRoundScore(frozenMyData?.isCorrect, myAnswerTime, myIsFirst);
+    const opponentRoundScore = calculateRoundScore(frozenOpponentData?.isCorrect, opponentAnswerTime, opponentIsFirst);
 
     return (
       <div className="container">
         <div className="roundEndTop">
-          <h1 className="resultTitle">Round {currentRound + 1} terminé !</h1>
+          <h1 className="resultTitle">Round {roundNumber} terminé !</h1>
 
           <div className="flag">{countryData.flag}</div>
-          <p className="countryName">{t.countries[countryName] || countryName}</p>
+          <p className="countryName">{t.countries[correctCountry] || correctCountry}</p>
 
           <div style={{display: 'flex', justifyContent: 'space-around', width: '100%', maxWidth: '600px', marginTop: '30px'}}>
-            <div style={{textAlign: 'center', flex: 1, padding: '20px', backgroundColor: myData?.isCorrect ? '#1b5e20' : '#b71c1c', borderRadius: '10px', margin: '0 10px'}}>
+            <div style={{textAlign: 'center', flex: 1, padding: '20px', backgroundColor: frozenMyData?.isCorrect ? '#1b5e20' : '#b71c1c', borderRadius: '10px', margin: '0 10px'}}>
               <p style={{fontWeight: 'bold', fontSize: '18px', marginBottom: '10px'}}>{userPseudo}</p>
               <p style={{fontSize: '16px', marginBottom: '5px'}}>
-                {myData?.isCorrect ? '✅' : '❌'} {myData?.answer || '(pas de réponse)'}
+                {frozenMyData?.isCorrect ? '✅' : '❌'} {frozenMyData?.answer || '(pas de réponse)'}
               </p>
               <p style={{fontSize: '14px', color: '#ccc', marginBottom: '10px'}}>
                 {myAnswerTime.toFixed(1)}s {myIsFirst && '⚡ BONUS'}
@@ -820,13 +991,13 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
               <p style={{fontSize: '24px', fontWeight: 'bold', color: '#4CAF50'}}>
                 +{myRoundScore} pts
               </p>
-              <p style={{fontSize: '14px', color: '#888'}}>Total: {myData?.score || 0}</p>
+              <p style={{fontSize: '14px', color: '#888'}}>Total: {frozenMyData?.score || 0}</p>
             </div>
 
-            <div style={{textAlign: 'center', flex: 1, padding: '20px', backgroundColor: opponentData?.isCorrect ? '#1b5e20' : '#b71c1c', borderRadius: '10px', margin: '0 10px'}}>
-              <p style={{fontWeight: 'bold', fontSize: '18px', marginBottom: '10px'}}>{opponentData?.pseudo}</p>
+            <div style={{textAlign: 'center', flex: 1, padding: '20px', backgroundColor: frozenOpponentData?.isCorrect ? '#1b5e20' : '#b71c1c', borderRadius: '10px', margin: '0 10px'}}>
+              <p style={{fontWeight: 'bold', fontSize: '18px', marginBottom: '10px'}}>{frozenOpponentData?.pseudo}</p>
               <p style={{fontSize: '16px', marginBottom: '5px'}}>
-                {opponentData?.isCorrect ? '✅' : '❌'} {opponentData?.answer || '(pas de réponse)'}
+                {frozenOpponentData?.isCorrect ? '✅' : '❌'} {frozenOpponentData?.answer || '(pas de réponse)'}
               </p>
               <p style={{fontSize: '14px', color: '#ccc', marginBottom: '10px'}}>
                 {opponentAnswerTime.toFixed(1)}s {opponentIsFirst && '⚡ BONUS'}
@@ -834,7 +1005,7 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
               <p style={{fontSize: '24px', fontWeight: 'bold', color: '#4CAF50'}}>
                 +{opponentRoundScore} pts
               </p>
-              <p style={{fontSize: '14px', color: '#888'}}>Total: {opponentData?.score || 0}</p>
+              <p style={{fontSize: '14px', color: '#888'}}>Total: {frozenOpponentData?.score || 0}</p>
             </div>
           </div>
 
@@ -860,9 +1031,8 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     );
   }
 
-  if (pvpState === 'game_end') {
-    const myScore = myData?.score || 0;
-    const opponentScore = opponentData?.score || 0;
+  if (pvpState === 'game_end' && gameEndData) {
+    const { myScore, myPseudo, opponentScore, opponentPseudo } = gameEndData;
     const iWon = myScore > opponentScore;
     const isDraw = myScore === opponentScore;
 
@@ -877,7 +1047,7 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
             <div style={{fontSize: '72px', marginBottom: '10px'}}>
               {iWon ? '🥇' : isDraw ? '🤝' : '🥈'}
             </div>
-            <p style={{color: '#fff', fontWeight: 'bold', fontSize: '24px'}}>{userPseudo}</p>
+            <p style={{color: '#fff', fontWeight: 'bold', fontSize: '24px'}}>{myPseudo}</p>
             <p style={{color: '#4CAF50', fontSize: '48px', fontWeight: 'bold'}}>{myScore}</p>
           </div>
 
@@ -887,7 +1057,7 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
             <div style={{fontSize: '72px', marginBottom: '10px'}}>
               {!iWon && !isDraw ? '🥇' : isDraw ? '🤝' : '🥈'}
             </div>
-            <p style={{color: '#fff', fontWeight: 'bold', fontSize: '24px'}}>{opponentData?.pseudo}</p>
+            <p style={{color: '#fff', fontWeight: 'bold', fontSize: '24px'}}>{opponentPseudo}</p>
             <p style={{color: '#f44336', fontSize: '48px', fontWeight: 'bold'}}>{opponentScore}</p>
           </div>
         </div>

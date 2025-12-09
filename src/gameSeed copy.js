@@ -2,8 +2,6 @@
 // GAME SEED - Génération déterministe
 // ========================================
 
-const R2_BASE_URL = 'https://pub-65a723b7e49d4a52b1b4cfd6d5b66a14.r2.dev';
-
 /**
  * Générateur de nombres pseudo-aléatoires avec seed
  * Utilise l'algorithme Mulberry32 pour la reproductibilité
@@ -69,10 +67,11 @@ export const generatePvPGameConfig = (seed, difficulty, countryPools) => {
     // Prend 100 images (ou moins si pas assez disponibles)
     const selectedIds = shuffledIds.slice(0, Math.min(100, countryData.totalImages));
 
-    // 🔥 CORRECTION : Génère les URLs Cloudflare R2 (comme dans getRandomImages)
+    // Génère les URLs Cloudinary
+    const cloudName = 'dc4ydqgbz';
     const images = selectedIds.map(id => {
       const paddedId = String(id).padStart(3, '0');
-      return `${R2_BASE_URL}/${countryData.folder}/${countryData.folder}_${paddedId}.webp`;
+      return `https://res.cloudinary.com/${cloudName}/image/upload/${countryData.cloudinaryFolder}/${paddedId}.jpg`;
     });
 
     return {

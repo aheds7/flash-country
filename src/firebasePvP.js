@@ -164,30 +164,30 @@ export const checkAndStartCountdown = async (roomCode) => {
 /**
  * Démarre un round
  */
-export const startRound = async (roomCode, roundNumber) => {
+export const startRound = async (roomCode, roundIndex) => {
   const roomRef = ref(database, `pvp_rooms/${roomCode}`);
   
-  await update(roomRef, {
+  const updates = {
     status: 'playing',
-    currentRound: roundNumber,
-    'gameConfig/roundStartTime': serverTimestamp()
-  });
-
-  // Reset les états des joueurs
-  const snapshot = await get(roomRef);
-  if (snapshot.exists()) {
-    const players = snapshot.val().players || {};
-    
-    for (const playerId of Object.keys(players)) {
-      await update(ref(database, `pvp_rooms/${roomCode}/players/${playerId}`), {
-        hasAnswered: false,
-        answer: null,
-        answerTime: null,
-        isCorrect: null,
-        ready: false
-      });
-    }
+    'gameConfig/roundStartTime': Date.now()
+  };
+  
+  // 🔥 RÉINITIALISER hasAnswered pour tous les joueurs
+  const roomSnapshot = await get(roomRef);
+  const roomData = roomSnapshot.val();
+  
+  if (roomData?.players) {
+    Object.keys(roomData.players).forEach(playerId => {
+      updates[`players/${playerId}/hasAnswered`] = false;
+      updates[`players/${playerId}/answer`] = '';
+      updates[`players/${playerId}/answerTime`] = 0;
+      updates[`players/${playerId}/isCorrect`] = false;
+      updates[`players/${playerId}/ready`] = false;
+    });
   }
+  
+  await update(roomRef, updates);
+  console.log('✅ Round démarré');
 };
 
 /**
@@ -361,7 +361,7 @@ export const checkAFK = async (roomCode) => {
 const generateRoomCode = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code = '';
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 5; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;

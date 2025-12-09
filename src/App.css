@@ -1277,3 +1277,588 @@ h2 img.emoji {
     height: 40px;
   }
 }
+
+/* ========================================
+   CSS PVP MENU - CARTES MÊME TAILLE
+   AJOUTE ce code À LA FIN de ton App.css
+   ======================================== */
+
+/* Container des 2 cartes */
+.pvp-menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* ← même hauteur */
+  gap: 24px;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 32px;
+}
+
+/* Cartes identiques hauteur + largeur */
+.pvp-menu-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  width: 320px;
+
+  /* 💡 Ajoute ceci */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* ← centre verticalement */
+  align-items: center;     /* ← centre horizontalement */
+}
+
+
+
+.pvp-menu-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.pvp-menu-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.pvp-menu-card:hover::before {
+  opacity: 0.1;
+}
+
+.pvp-menu-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.pvp-menu-card p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* Mode clair */
+[data-theme="light"] .pvp-menu-card {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] .pvp-menu-card:hover {
+  box-shadow: 0 16px 48px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="light"] .pvp-join-section {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] .pvp-join-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .pvp-join-input:focus {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pvp-menu-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pvp-menu-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .pvp-join-section {
+    padding: 24px 20px;
+  }
+
+  .pvp-join-input-container {
+    flex-direction: column;
+  }
+
+  .pvp-join-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .pvp-menu-card {
+    padding: 28px 20px;
+    min-height: 160px;
+  }
+
+  .pvp-menu-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .pvp-join-section {
+    padding: 20px 16px;
+  }
+
+  .pvp-join-input {
+    font-size: 1rem;
+    padding: 14px 16px;
+  }
+
+  .pvp-join-button {
+    font-size: 0.9375rem;
+    padding: 14px 20px;
+  }
+}
+
+/* Bouton Copier dans le code room */
+.pvp-room-code-display {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  animation: pvpGlow 2s ease-in-out infinite;
+}
+
+.pvp-room-code-display p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.pvp-room-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pvp-room-code {
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 12px;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pvp-copy-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pvp-copy-button:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.pvp-copy-button.copied {
+  background: var(--success);
+  color: white;
+  border-color: transparent;
+}
+
+/* ========================================
+   CSS PVP COMPLET
+   ======================================== */
+
+/* Container des 2 cartes */
+.pvp-menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 32px;
+}
+
+.pvp-menu-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.pvp-menu-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.pvp-menu-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.pvp-menu-card:hover::before {
+  opacity: 0.1;
+}
+
+.pvp-menu-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.pvp-menu-card p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* Section rejoindre */
+.pvp-join-section {
+  margin-top: 40px;
+  width: 100%;
+  max-width: 550px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.pvp-join-section p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.pvp-join-input-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pvp-input-with-paste {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  align-items: center;
+}
+
+.pvp-join-input {
+  flex: 1;
+  padding: 16px 20px;
+  font-size: 1.125rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition);
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-align: center;
+  text-transform: uppercase;
+  height: 56px;
+}
+
+.pvp-join-input:focus {
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.pvp-join-input::placeholder {
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  font-size: 0.9375rem;
+}
+
+.pvp-paste-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pvp-paste-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.pvp-paste-button:hover {
+  transform: translateY(-4px);
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.pvp-paste-button:hover::before {
+  opacity: 0.15;
+}
+
+.pvp-paste-button span {
+  position: relative;
+  z-index: 1;
+}
+
+.pvp-join-button {
+  padding: 16px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+  min-width: 140px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.pvp-join-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+
+.pvp-join-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Code room avec bouton copier */
+.pvp-room-code-display {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.pvp-room-code-display > p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.pvp-room-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pvp-room-code {
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 12px;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pvp-copy-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pvp-copy-button:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.pvp-copy-button.copied {
+  background: var(--success);
+  color: white;
+  border-color: transparent;
+}
+
+/* Mode clair */
+[data-theme="light"] .pvp-menu-card {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] .pvp-menu-card:hover {
+  box-shadow: 0 16px 48px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="light"] .pvp-join-section {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] .pvp-join-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .pvp-join-input:focus {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+[data-theme="light"] .pvp-room-code-display {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pvp-menu-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pvp-menu-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .pvp-join-section {
+    padding: 24px 20px;
+    max-width: 100%;
+  }
+
+  .pvp-join-input-container {
+    flex-direction: column;
+  }
+
+  .pvp-input-with-paste {
+    width: 100%;
+  }
+
+  .pvp-join-button {
+    width: 100%;
+  }
+
+  .pvp-room-code {
+    font-size: 2rem;
+    letter-spacing: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pvp-menu-card {
+    padding: 28px 20px;
+  }
+
+  .pvp-menu-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .pvp-join-section {
+    padding: 20px 16px;
+  }
+
+  .pvp-join-input {
+    font-size: 1rem;
+    padding: 14px 16px;
+    height: 50px;
+  }
+
+  .pvp-paste-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .pvp-join-button {
+    font-size: 0.9375rem;
+    padding: 14px 20px;
+    height: 50px;
+  }
+
+  .pvp-room-code {
+    font-size: 1.5rem;
+    letter-spacing: 6px;
+  }
+}

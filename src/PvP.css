@@ -1,22 +1,27 @@
 /* ========================================
-   ANIMATIONS MODE PVP
+   ANIMATIONS MODE PVP - Style Glassmorphism
+   AJOUTE ce code À LA FIN de ton App.css
    ======================================== */
 
-@keyframes pulse {
+/* ========================================
+   KEYFRAMES ANIMATIONS
+   ======================================== */
+
+@keyframes pvpPulse {
   0%, 100% {
     opacity: 1;
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.02);
+    opacity: 0.85;
+    transform: scale(1.03);
   }
 }
 
-@keyframes fadeIn {
+@keyframes pvpFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -24,9 +29,9 @@
   }
 }
 
-@keyframes slideIn {
+@keyframes pvpSlideIn {
   from {
-    transform: translateX(-20px);
+    transform: translateX(-30px);
     opacity: 0;
   }
   to {
@@ -35,83 +40,9 @@
   }
 }
 
-/* Effet pulse sur l'indicateur de stress */
-.stress-indicator {
-  animation: pulse 1s infinite;
-}
-
-/* Transition fluide pour la barre de temps */
-.time-bar {
-  transition: width 1s linear;
-}
-
-/* Style pour les cartes de résultats */
-.result-card {
-  animation: fadeIn 0.5s ease-out;
-  transition: all 0.3s ease;
-}
-
-.result-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Indicateur de victoire */
-.victory-banner {
-  animation: slideIn 0.8s ease-out;
-}
-
-/* Style pour le code de room */
-.room-code {
-  font-family: 'Courier New', monospace;
-  letter-spacing: 8px;
-  text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-}
-
-/* Effets de hover pour les boutons PvP */
-.pvp-button {
-  transition: all 0.3s ease;
-}
-
-.pvp-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
-}
-
-/* Indicateur "adversaire a répondu" */
-.opponent-answered {
-  animation: pulse 1s infinite, fadeIn 0.3s ease-out;
-  background: linear-gradient(45deg, #f44336, #ff5722);
-}
-
-/* Score animé */
-.score-popup {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* États des joueurs */
-.player-ready {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.player-waiting {
-  opacity: 0.6;
-  animation: pulse 2s infinite;
-}
-
-/* Effet de transition entre les rounds */
-.round-transition {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* Médailles de victoire/défaite */
-.medal {
-  animation: fadeIn 0.8s ease-out, rotateIn 1s ease-out;
-}
-
-@keyframes rotateIn {
+@keyframes pvpRotateIn {
   from {
-    transform: rotate(-180deg) scale(0.5);
+    transform: rotate(-180deg) scale(0.3);
     opacity: 0;
   }
   to {
@@ -120,12 +51,393 @@
   }
 }
 
-/* Effet de pulsation pour le countdown */
-.countdown-pulse {
-  animation: pulse 1s infinite;
+@keyframes pvpGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(102, 126, 234, 0.8);
+  }
 }
 
-/* Container responsive pour les résultats PvP */
+@keyframes pvpShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ========================================
+   INDICATEUR DE STRESS / TIMER
+   ======================================== */
+
+.stress-indicator {
+  animation: pvpPulse 1s ease-in-out infinite;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 12px rgba(235, 51, 73, 0.3);
+}
+
+/* Barre de temps avec transition fluide */
+.time-bar {
+  height: 8px;
+  background: var(--accent-primary);
+  border-radius: 8px;
+  transition: width 1s linear;
+  box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.time-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: pvpShimmer 2s infinite;
+}
+
+/* Barre de temps en mode danger */
+.time-bar.danger {
+  background: var(--danger);
+  animation: pvpPulse 0.5s ease-in-out infinite;
+}
+
+/* ========================================
+   CARTES DE RÉSULTATS
+   ======================================== */
+
+.result-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px;
+  animation: pvpFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.result-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+[data-theme="light"] .result-card {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .result-card:hover {
+  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.25);
+}
+
+/* ========================================
+   BANNIÈRE DE VICTOIRE
+   ======================================== */
+
+.victory-banner {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  border: 2px solid var(--success);
+  border-radius: 20px;
+  padding: 32px;
+  animation: pvpSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 12px 32px rgba(17, 153, 142, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.victory-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(17, 153, 142, 0.2),
+    transparent
+  );
+  animation: pvpShimmer 3s infinite;
+}
+
+[data-theme="light"] .victory-banner {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 12px 32px rgba(17, 153, 142, 0.3);
+}
+
+/* Bannière de défaite */
+.defeat-banner {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  border: 2px solid var(--danger);
+  border-radius: 20px;
+  padding: 32px;
+  animation: pvpSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 12px 32px rgba(235, 51, 73, 0.4);
+}
+
+[data-theme="light"] .defeat-banner {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 12px 32px rgba(235, 51, 73, 0.3);
+}
+
+/* ========================================
+   CODE DE ROOM
+   ======================================== */
+
+.room-code {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Courier New', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 12px;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  padding: 20px;
+  background-size: 200% 200%;
+  animation: pvpShimmer 3s linear infinite;
+  position: relative;
+}
+
+.room-code-container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 24px;
+  animation: pvpGlow 2s ease-in-out infinite;
+}
+
+/* ========================================
+   BOUTONS PVP
+   ======================================== */
+
+.pvp-button {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.pvp-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.pvp-button:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.pvp-button:hover::before {
+  opacity: 0.15;
+}
+
+.pvp-button span {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .pvp-button {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .pvp-button:hover {
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.3);
+}
+
+/* ========================================
+   INDICATEUR "ADVERSAIRE A RÉPONDU"
+   ======================================== */
+
+.opponent-answered {
+  animation: pvpPulse 1s ease-in-out infinite, pvpFadeIn 0.3s ease-out;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 2px solid var(--danger);
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 16px rgba(235, 51, 73, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.opponent-answered::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--danger);
+  opacity: 0.1;
+}
+
+/* ========================================
+   POPUP DE SCORE
+   ======================================== */
+
+.score-popup {
+  animation: pvpFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 20px 32px;
+  box-shadow: 0 8px 24px var(--shadow);
+  font-size: 1.5rem;
+  font-weight: 700;
+  background-clip: text;
+}
+
+.score-popup.positive {
+  border-color: var(--success);
+  box-shadow: 0 8px 24px rgba(17, 153, 142, 0.4);
+}
+
+.score-popup.negative {
+  border-color: var(--danger);
+  box-shadow: 0 8px 24px rgba(235, 51, 73, 0.4);
+}
+
+/* ========================================
+   ÉTATS DES JOUEURS
+   ======================================== */
+
+.player-ready {
+  animation: pvpFadeIn 0.5s ease-out;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 2px solid var(--success);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(17, 153, 142, 0.3);
+}
+
+.player-waiting {
+  opacity: 0.6;
+  animation: pvpPulse 2s ease-in-out infinite;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* ========================================
+   TRANSITION ENTRE ROUNDS
+   ======================================== */
+
+.round-transition {
+  animation: pvpFadeIn 0.5s ease-out;
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 48px;
+  box-shadow: 0 20px 60px var(--shadow);
+  text-align: center;
+}
+
+.round-number {
+  font-size: 4rem;
+  font-weight: 800;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+/* ========================================
+   MÉDAILLES DE VICTOIRE/DÉFAITE
+   ======================================== */
+
+.medal {
+  animation: pvpFadeIn 0.8s ease-out, pvpRotateIn 1s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 5rem;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+.medal.gold {
+  filter: drop-shadow(0 8px 24px rgba(255, 215, 0, 0.6));
+}
+
+.medal.silver {
+  filter: drop-shadow(0 8px 24px rgba(192, 192, 192, 0.6));
+}
+
+/* ========================================
+   COUNTDOWN PULSE
+   ======================================== */
+
+.countdown-pulse {
+  animation: pvpPulse 1s ease-in-out infinite;
+  font-size: 3rem;
+  font-weight: 800;
+  background: var(--accent-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.countdown-pulse.urgent {
+  animation: pvpPulse 0.5s ease-in-out infinite;
+  background: var(--danger);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   CONTAINER RÉSULTATS PVP
+   ======================================== */
+
+.pvp-results-container {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
 @media (max-width: 768px) {
   .pvp-results-container {
     flex-direction: column !important;
@@ -134,5 +446,55 @@
   
   .result-card {
     margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .room-code {
+    font-size: 1.5rem;
+    letter-spacing: 8px;
+  }
+
+  .round-number {
+    font-size: 3rem;
+  }
+
+  .medal {
+    font-size: 4rem;
+  }
+
+  .countdown-pulse {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-code {
+    font-size: 1.25rem;
+    letter-spacing: 6px;
+  }
+
+  .result-card {
+    padding: 20px;
+  }
+
+  .victory-banner,
+  .defeat-banner {
+    padding: 24px;
+  }
+
+  .round-transition {
+    padding: 32px 20px;
+  }
+
+  .round-number {
+    font-size: 2.5rem;
+  }
+
+  .medal {
+    font-size: 3.5rem;
+  }
+
+  .countdown-pulse {
+    font-size: 2rem;
   }
 }

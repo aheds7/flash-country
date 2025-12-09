@@ -81,7 +81,7 @@ const Leaderboard = ({ onClose, translations, currentLang, currentMode, currentD
       <div className="leaderboardCard" onClick={(e) => e.stopPropagation()}>
         <div className="leaderboardHeader">
           <h2 className="leaderboardTitle">
-            🏆 {translations[currentLang].leaderboard || 'Classement'}
+             {translations[currentLang].leaderboard || 'Classement'}
           </h2>
           <button className="closeButton" onClick={onClose}>✕</button>
         </div>

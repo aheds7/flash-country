@@ -1,4 +1,11 @@
-/* Leaderboard.css - Styles pour le classement avec 9 catégories */
+/* ========================================
+   Leaderboard.css - Style Glassmorphism Moderne
+   REMPLACE tout ton Leaderboard.css actuel par ce code
+   ======================================== */
+
+/* ========================================
+   OVERLAY (Fond avec blur)
+   ======================================== */
 
 .leaderboardOverlay {
   position: fixed;
@@ -6,7 +13,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,116 +33,178 @@
   }
 }
 
+[data-theme="light"] .leaderboardOverlay {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* ========================================
+   CARTE PRINCIPALE
+   ======================================== */
+
 .leaderboardCard {
-  background-color: var(--card-bg, #2a2a2a);
-  border-radius: var(--border-radius, 12px);
-  padding: 30px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 32px;
   max-width: 700px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
-  animation: slideUp 0.4s ease;
+  box-shadow: 0 20px 60px var(--shadow);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(40px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
+[data-theme="light"] .leaderboardCard {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+}
+
+/* Scrollbar personnalisée */
+.leaderboardCard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboardCard::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.leaderboardCard::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
 .leaderboardHeader {
-  display: flex;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 25px;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
 }
 
 .leaderboardTitle {
-  font-size: 2.2rem;
-  font-weight: bold;
-  background: linear-gradient(45deg, #FFD700, #FFA500);
+  font-size: 2.25rem;
+  font-weight: 700;
+  background: var(--accent-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin: 0;
+  text-align: center;
+  grid-column: 2;
 }
 
 .closeButton {
-  background-color: transparent;
-  border: 2px solid var(--text-secondary, #b0b0b0);
-  color: var(--text-secondary, #b0b0b0);
-  font-size: 1.5rem;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
+  transition: all var(--transition);
+  padding: 0;
+  grid-column: 3;
 }
 
 .closeButton:hover {
-  background-color: var(--danger-color, #f44336);
-  border-color: var(--danger-color, #f44336);
+  background: var(--danger);
   color: white;
+  border-color: transparent;
   transform: rotate(90deg);
 }
 
-/* Onglets Difficulté */
+/* ========================================
+   ONGLETS DIFFICULTÉ
+   ======================================== */
+
 .difficultyTabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 15px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border);
   padding-bottom: 3px;
 }
 
 .difficultyTab {
   flex: 1;
-  padding: 12px 10px;
-  font-size: 0.95rem;
+  padding: 12px 12px;
+  font-size: 0.9375rem;
   font-weight: 600;
-  background-color: transparent;
+  background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: var(--text-secondary, #b0b0b0);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition);
   border-radius: 8px 8px 0 0;
+  margin-bottom: -2px;
 }
 
 .difficultyTab:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background: rgba(102, 126, 234, 0.05);
+  color: var(--text-primary);
 }
 
 .difficultyTab.active {
   color: white;
-  background-color: rgba(255, 255, 255, 0.08);
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .difficultyTab.easy.active {
-  border-bottom-color: #4CAF50;
-  color: #4CAF50;
+  border-bottom-color: #11998e;
+  color: #11998e;
+}
+
+[data-theme="light"] .difficultyTab.easy.active {
+  color: #0d7a70;
 }
 
 .difficultyTab.medium.active {
-  border-bottom-color: #FF9800;
-  color: #FF9800;
+  border-bottom-color: #f2994a;
+  color: #f2994a;
+}
+
+[data-theme="light"] .difficultyTab.medium.active {
+  color: #d6813a;
 }
 
 .difficultyTab.hard.active {
-  border-bottom-color: #f44336;
-  color: #f44336;
+  border-bottom-color: #eb3349;
+  color: #eb3349;
 }
 
-/* Onglets Mode */
+[data-theme="light"] .difficultyTab.hard.active {
+  color: #d12d40;
+}
+
+/* ========================================
+   ONGLETS MODE
+   ======================================== */
+
 .modeTabs {
   display: flex;
   gap: 8px;
@@ -142,58 +213,83 @@
 
 .modeTab {
   flex: 1;
-  padding: 10px 8px;
-  font-size: 0.9rem;
+  padding: 10px 10px;
+  font-size: 0.875rem;
   font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 2px solid transparent;
-  border-radius: 8px;
-  color: var(--text-secondary, #b0b0b0);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition);
 }
 
 .modeTab:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(76, 175, 80, 0.3);
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+  color: var(--text-primary);
+  transform: translateY(-2px);
 }
 
 .modeTab.active {
-  background-color: var(--primary-color, #4CAF50);
-  border-color: var(--primary-color, #4CAF50);
+  background: var(--accent-primary);
+  border-color: transparent;
   color: white;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-/* Indicateur catégorie actuelle */
+[data-theme="light"] .modeTab {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .modeTab:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* ========================================
+   INDICATEUR CATÉGORIE ACTUELLE
+   ======================================== */
+
 .currentCategory {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
   padding: 12px;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
-  border-radius: 10px;
-  border: 1px solid rgba(76, 175, 80, 0.3);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+[data-theme="light"] .currentCategory {
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .categoryBadge {
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   font-weight: 600;
-  color: white;
-  padding: 5px 12px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 6px 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .categorySeparator {
-  font-size: 1.2rem;
-  color: var(--text-secondary, #b0b0b0);
+  font-size: 1.25rem;
+  color: var(--text-muted);
   font-weight: bold;
 }
 
-/* Container des scores */
+/* ========================================
+   CONTAINER DES SCORES
+   ======================================== */
+
 .scoresContainer {
   min-height: 400px;
   margin-bottom: 20px;
@@ -204,8 +300,8 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  font-size: 1.2rem;
-  color: var(--text-secondary, #b0b0b0);
+  font-size: 1.125rem;
+  color: var(--text-muted);
 }
 
 .noScores {
@@ -215,27 +311,30 @@
   justify-content: center;
   min-height: 400px;
   text-align: center;
-  padding: 30px;
+  padding: 40px 20px;
 }
 
 .noScoresEmoji {
   font-size: 5rem;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+  opacity: 0.5;
 }
 
 .noScores p {
-  font-size: 1.2rem;
-  color: var(--text-secondary, #b0b0b0);
-  margin-bottom: 10px;
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 
 .noScoresSubtext {
-  font-size: 1rem !important;
-  color: var(--text-secondary, #b0b0b0) !important;
+  font-size: 0.9375rem !important;
   opacity: 0.7;
 }
 
-/* Liste des scores */
+/* ========================================
+   LISTE DES SCORES
+   ======================================== */
+
 .scoresList {
   display: flex;
   flex-direction: column;
@@ -245,29 +344,26 @@
 .scoreItem {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
   padding: 18px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+  transition: all var(--transition);
 }
 
 .scoreItem:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  transform: translateX(5px);
-  border-color: var(--primary-color, #4CAF50);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.3);
 }
 
-.scoreItem.topThree {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.15));
-  border-color: rgba(255, 215, 0, 0.4);
+[data-theme="light"] .scoreItem {
+  background: rgba(255, 255, 255, 0.9);
 }
 
-.scoreItem.firstPlace {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 165, 0, 0.25));
-  border-color: rgba(255, 215, 0, 0.6);
-  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+[data-theme="light"] .scoreItem:hover {
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
 }
 
 .scoreRank {
@@ -282,16 +378,38 @@
   display: block;
 }
 
+/* Couleurs podium */
+.scoreItem.firstPlace .rankBadge {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scoreItem:nth-child(2) .rankBadge {
+  background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scoreItem:nth-child(3) .rankBadge {
+  background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .scoreInfo {
   flex: 1;
   min-width: 0;
 }
 
 .scorePseudo {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: var(--text-primary, #ffffff);
-  margin-bottom: 5px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -301,8 +419,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
-  color: var(--text-secondary, #b0b0b0);
+  font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
 .scoreDate {
@@ -318,49 +436,60 @@
 
 .scoreValue {
   font-size: 2rem;
-  font-weight: bold;
-  color: var(--primary-color, #4CAF50);
+  font-weight: 700;
+  background: var(--success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1;
 }
 
 .scoreLabel {
-  font-size: 0.9rem;
-  color: var(--text-secondary, #b0b0b0);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 4px;
 }
 
-/* Bouton refresh */
+/* ========================================
+   BOUTON REFRESH
+   ======================================== */
+
 .refreshButton {
   width: 100%;
-  padding: 15px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  background-color: var(--secondary-color, #2196F3);
+  padding: 16px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  background: var(--accent-primary);
   color: white;
   border: none;
-  border-radius: var(--border-radius, 12px);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
 }
 
 .refreshButton:hover:not(:disabled) {
-  background-color: #1976D2;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
 }
 
 .refreshButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
 @media (max-width: 768px) {
   .leaderboardCard {
-    padding: 25px 20px;
+    padding: 28px 24px;
   }
 
   .leaderboardTitle {
-    font-size: 1.8rem;
+    font-size: 1.875rem;
   }
 
   .difficultyTabs,
@@ -369,13 +498,13 @@
   }
 
   .difficultyTab {
-    padding: 10px 8px;
-    font-size: 0.85rem;
+    padding: 10px 10px;
+    font-size: 0.875rem;
   }
 
   .modeTab {
-    padding: 8px 6px;
-    font-size: 0.8rem;
+    padding: 8px 8px;
+    font-size: 0.8125rem;
   }
 
   .currentCategory {
@@ -383,61 +512,82 @@
   }
 
   .categoryBadge {
-    font-size: 0.95rem;
-    padding: 4px 10px;
+    font-size: 0.9375rem;
+    padding: 5px 12px;
   }
 
   .scoreItem {
-    padding: 15px;
-    gap: 12px;
+    padding: 16px;
+    gap: 14px;
   }
 
   .rankBadge {
-    font-size: 1.5rem;
-    min-width: 40px;
+    font-size: 1.625rem;
+    min-width: 42px;
   }
 
   .scorePseudo {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
   }
 
   .scoreValue {
-    font-size: 1.5rem;
+    font-size: 1.625rem;
   }
 }
 
 @media (max-width: 480px) {
   .leaderboardCard {
-    padding: 20px 15px;
+    padding: 24px 20px;
     max-height: 95vh;
+    border-radius: 20px;
   }
 
   .leaderboardTitle {
-    font-size: 1.5rem;
+    font-size: 1.625rem;
   }
 
   .closeButton {
-    width: 35px;
-    height: 35px;
-    font-size: 1.2rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
   }
 
   .difficultyTabs {
     flex-direction: column;
     gap: 8px;
+    border-bottom: none;
   }
 
   .difficultyTab {
     padding: 10px;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .difficultyTab.active {
+    border: 2px solid;
+  }
+
+  .difficultyTab.easy.active {
+    border-color: #11998e;
+  }
+
+  .difficultyTab.medium.active {
+    border-color: #f2994a;
+  }
+
+  .difficultyTab.hard.active {
+    border-color: #eb3349;
   }
 
   .modeTabs {
-    gap: 5px;
+    gap: 6px;
   }
 
   .modeTab {
-    padding: 8px 5px;
+    padding: 8px 6px;
     font-size: 0.75rem;
   }
 
@@ -452,17 +602,17 @@
   }
 
   .categoryBadge {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
   }
 
   .scoreItem {
-    padding: 12px;
-    gap: 10px;
+    padding: 14px;
+    gap: 12px;
   }
 
   .rankBadge {
-    font-size: 1.3rem;
-    min-width: 35px;
+    font-size: 1.375rem;
+    min-width: 36px;
   }
 
   .scorePseudo {
@@ -470,19 +620,19 @@
   }
 
   .scoreDetails {
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
   }
 
   .scoreValue {
-    font-size: 1.3rem;
+    font-size: 1.375rem;
   }
 
   .scoreLabel {
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
   }
 
   .refreshButton {
-    padding: 12px;
+    padding: 14px;
     font-size: 1rem;
   }
 
@@ -493,23 +643,4 @@
   .noScores p {
     font-size: 1rem;
   }
-}
-
-/* Scrollbar personnalisée */
-.leaderboardCard::-webkit-scrollbar {
-  width: 8px;
-}
-
-.leaderboardCard::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-.leaderboardCard::-webkit-scrollbar-thumb {
-  background: var(--primary-color, #4CAF50);
-  border-radius: 10px;
-}
-
-.leaderboardCard::-webkit-scrollbar-thumb:hover {
-  background: #45a049;
 }

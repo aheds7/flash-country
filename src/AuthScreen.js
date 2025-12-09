@@ -171,10 +171,10 @@ const handleLogin = async (e) => {
       <div className="authContainer">
         <div className="authCard">
           <button className="backButton" onClick={() => { setAuthMode('choice'); resetForm(); }}>
-            ← {translations[currentLang].back || 'Retour'}
+            ←
           </button>
 
-          <h1 className="authTitle"><EmojiText>🎮</EmojiText> {translations[currentLang].playAsGuest || 'Jouer en invité'}</h1>
+          <h1 className="authTitle">Jouer en invité</h1>
           <p className="authSubtitle">
             {translations[currentLang].guestInfo || 'Entre ton pseudo pour commencer'}
           </p>
@@ -230,7 +230,7 @@ const handleLogin = async (e) => {
       <div className="authContainer">
         <div className="authCard">
           <button className="backButton" onClick={() => { setAuthMode('choice'); resetForm(); }}>
-            ← {translations[currentLang].back || 'Retour'}
+            ←
           </button>
 
           <h1 className="authTitle"><EmojiText>👤</EmojiText> {translations[currentLang].login || 'Connexion'}</h1>
@@ -302,7 +302,7 @@ const handleLogin = async (e) => {
       <div className="authContainer">
         <div className="authCard">
           <button className="backButton" onClick={() => { setAuthMode('choice'); resetForm(); }}>
-            ← {translations[currentLang].back || 'Retour'}
+            ←
           </button>
 
           <h1 className="authTitle"><EmojiText>✨</EmojiText> {translations[currentLang].signup || 'Créer un compte'}</h1>
