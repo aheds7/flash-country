@@ -1862,3 +1862,81 @@ h2 img.emoji {
     letter-spacing: 6px;
   }
 }
+
+/* ========================================
+   OPTIMISATIONS MOBILE
+   ======================================== */
+
+@media (max-width: 480px) {
+  /* Container moins de padding */
+  .container {
+    padding: 65px 12px 24px !important;
+  }
+  
+  /* Game header plus compact */
+  .gameHeader {
+    margin-bottom: 8px !important;
+  }
+  
+  .question {
+    font-size: 1.125rem !important;
+    margin-bottom: 2px !important;
+  }
+  
+  .round {
+    font-size: 0.75rem !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* Progress bar visible et plus proche */
+  .progressBarContainer {
+    margin-bottom: 12px !important;
+  }
+  
+  /* Image plus petite et plus proche de l'input */
+  .imageContainer {
+    height: 200px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  /* Input container plus proche */
+  .inputContainer {
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-top: 0 !important;
+  }
+  
+  .input {
+    width: 100% !important;
+    padding: 14px 18px !important;
+    font-size: 1rem !important;
+  }
+  
+  .submitButton {
+    width: 100% !important;
+    padding: 14px !important;
+    font-size: 1.25rem !important;
+  }
+  
+  /* Game content optimisé */
+  .gameContent {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Cache complètement l'input et le container pendant roundEnd/gameEnd */
+  body:has(.roundEndTop) .inputContainer,
+  body:has(.finalScore) .inputContainer {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  
+  /* Empêche le focus sur les inputs cachés */
+  .input:not(:focus) {
+    pointer-events: none;
+  }
+}

@@ -118,6 +118,7 @@ function App() {
   const intervalRef = useRef(null);
   const roundTimerRef = useRef(null);
   const [currentCountryData, setCurrentCountryData] = useState(null);
+  const inputRef = useRef(null);
   
   // 🔥 NOUVEAUX ÉTATS POUR LE PRÉCHARGEMENT
   const [imagesToPreload, setImagesToPreload] = useState([]);
@@ -203,17 +204,17 @@ function App() {
   }, [countdown, gameState]);
 
   useEffect(() => {
-    if (gameState === 'roundEnd') {
-      const handleKeyPress = (e) => {
-        if (e.key === 'Enter' || e.keyCode === 13) {
-          e.preventDefault();
-          nextRound();
-        }
-      };
-      window.addEventListener('keydown', handleKeyPress);
-      return () => window.removeEventListener('keydown', handleKeyPress);
+    if (gameState === 'roundEnd' || gameState === 'gameEnd') {
+      // Attends un peu que le DOM soit mis à jour
+      setTimeout(() => {
+        // Retire le focus de TOUS les inputs
+        document.querySelectorAll('input').forEach(input => {
+          input.blur();
+        });
+        document.activeElement?.blur();
+      }, 50);
     }
-  }, [gameState, currentRound, maxRounds]);
+  }, [gameState]);
 
   // 🔥 QUAND LES IMAGES SONT CHARGÉES ET QUE LE COUNTDOWN EST FINI, DÉMARRER LE JEU
   useEffect(() => {
@@ -309,8 +310,19 @@ function App() {
   };
 
   const checkAnswer = () => {
+      // Ferme le clavier sur mobile
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
     if (!currentCountry || !userAnswer.trim() || hasAnswered) return;
     setHasAnswered(true);
+    // Ferme le clavier à nouveau (sécurité)
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+      document.activeElement?.blur();
+    }, 100);
     const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const normalizedAnswer = removeAccents(userAnswer.toLowerCase().trim());
     const correctNames = countryPools[currentCountry].names.map(name => removeAccents(name));
@@ -342,6 +354,11 @@ function App() {
   };
 
   const nextRound = () => {
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
+    document.activeElement?.blur();
+
     if (currentRound < maxRounds - 1) {
       setCurrentRound(currentRound + 1);
       setGameState('countdown');
@@ -531,6 +548,7 @@ function App() {
           </div>
           <div className="inputContainer">
             <input
+              ref={inputRef}
               type="text"
               className="input"
               placeholder={t.typeCountry}

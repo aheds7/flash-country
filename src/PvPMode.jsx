@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { countries as cloudinaryCountries } from './countries';
 import { generatePvPGameConfig, getCurrentImageIndex } from './gameSeed';
-import { ref, update } from 'firebase/database'; 
+import { ref, update, onValue, onDisconnect } from 'firebase/database'; 
 import { database } from './firebase';
-import { useImagePreloader } from './useImagePreloader'; // 🔥 AJOUT
+import { useImagePreloader } from './useImagePreloader'; 
+import { EmojiText } from './emojiParser'
 import {
   createPvPRoom,
   joinPvPRoom,
@@ -34,6 +35,9 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   const [gameConfig, setGameConfig] = useState(null);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [opponentDisconnected, setOpponentDisconnected] = useState(false);
+  const [reconnectionTimer, setReconnectionTimer] = useState(null);
+  const [disconnectionCountdown, setDisconnectionCountdown] = useState(null);
   
   // États du jeu
   const [countdown, setCountdown] = useState(3);
@@ -140,32 +144,47 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
       // 🔥 VÉRIFIER SI LES 2 SONT PRÊTS POUR LE ROUND SUIVANT (pendant round_end)
       if (data.status === 'round_end' && currentStateRef.current === 'round_end') {
         const players = Object.values(data.players || {});
-        const bothReady = players.length === 2 && players.every(p => p.ready);
+        const playerIds = Object.keys(data.players);
         const amIHost = data.players[myId]?.isHost;
         
-        if (bothReady && amIHost) {
-          console.log('✅ Les 2 joueurs sont prêts pour le round suivant !');
-          const nextRound = data.currentRound + 1;
+        // 🔥 VÉRIFIER SI L'ADVERSAIRE EST DÉCONNECTÉ
+        const opponentPlayer = players.find(p => Object.keys(data.players).find(id => id !== myId && data.players[id] === p));
+        const opponentIsDisconnected = opponentPlayer && opponentPlayer.connected === false;
+        
+        // 🔥 Si l'hôte est déconnecté, le joueur connecté prend le relais
+        const hostIsDisconnected = opponentIsDisconnected && players.find(p => p.isHost)?.connected === false;
+        const canProcess = amIHost || hostIsDisconnected;
+        
+        if (opponentIsDisconnected && canProcess) {
+          console.log('⚠️ Adversaire déconnecté en round_end - Timer de 30s géré par useEffect');
+          // Le timer de déconnexion dans le useEffect gère déjà ça
+        } else {
+          // Logique normale : attendre que les 2 soient prêts
+          const bothReady = players.length === 2 && players.every(p => p.ready);
           
-          if (nextRound >= data.maxRounds) {
-            console.log('🏁 Partie terminée !');
-            await endGame(roomCode);
-          } else {
-            console.log(`🔄 Passage au round ${nextRound + 1}`);
+          if (bothReady && canProcess) {
+            console.log('✅ Les 2 joueurs sont prêts pour le round suivant !');
+            const nextRound = data.currentRound + 1;
             
-            // 🔥 RÉINITIALISER ready POUR TOUS LES JOUEURS
-            const playerIds = Object.keys(data.players);
-            const updates = {
-              status: 'countdown',
-              countdown: 3,
-              currentRound: nextRound
-            };
-            
-            playerIds.forEach(pid => {
-              updates[`players/${pid}/ready`] = false;
-            });
-            
-            await update(ref(database, `pvp_rooms/${roomCode}`), updates);
+            if (nextRound >= data.maxRounds) {
+              console.log('🏁 Partie terminée !');
+              await endGame(roomCode);
+            } else {
+              console.log(`🔄 Passage au round ${nextRound + 1}`);
+              
+              // 🔥 RÉINITIALISER ready POUR TOUS LES JOUEURS
+              const updates = {
+                status: 'countdown',
+                countdown: 3,
+                currentRound: nextRound
+              };
+              
+              playerIds.forEach(pid => {
+                updates[`players/${pid}/ready`] = false;
+              });
+              
+              await update(ref(database, `pvp_rooms/${roomCode}`), updates);
+            }
           }
         }
       }
@@ -173,11 +192,41 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
       // VÉRIFIER SI LES 2 ONT RÉPONDU (pendant le jeu)
       if (data.status === 'playing' && currentStateRef.current === 'playing') {
         const players = Object.values(data.players || {});
+        
+        // 🔥 VÉRIFIER SI QUELQU'UN EST DÉCONNECTÉ
+        const someoneDisconnected = players.some(p => p.connected === false);
+        
         const bothAnswered = players.length === 2 && players.every(p => p.hasAnswered);
         const amIHost = data.players[myId]?.isHost;
         
-        if (bothAnswered && amIHost && !isProcessingRef.current) {
-          console.log('🔔 FIREBASE DÉTECTE: Les 2 ont répondu !');
+        // 🔥 LOGS DE DEBUG
+        console.log('🔍 VÉRIFICATION RÉPONSES:');
+        console.log(`   someoneDisconnected: ${someoneDisconnected}`);
+        console.log(`   bothAnswered: ${bothAnswered}`);
+        console.log(`   amIHost: ${amIHost}`);
+        console.log(`   isProcessingRef: ${isProcessingRef.current}`);
+        
+        // Détail de chaque joueur
+        players.forEach((p, idx) => {
+          const playerId = Object.keys(data.players)[idx];
+          console.log(`   Joueur ${idx + 1} (${p.pseudo}):`, {
+            hasAnswered: p.hasAnswered,
+            connected: p.connected,
+            answer: p.answer,
+            isHost: p.isHost
+          });
+        });
+        
+        // 🔥 DÉCLENCHER LA FIN SI : les 2 ont répondu OU quelqu'un est déconnecté et au moins 1 a répondu
+        const shouldEndRound = bothAnswered || (someoneDisconnected && players.some(p => p.hasAnswered));
+        
+        console.log(`   shouldEndRound: ${shouldEndRound}`);
+        
+        const hostIsDisconnected = someoneDisconnected && Object.values(data.players).find(p => p.isHost)?.connected === false;
+        const canProcess = amIHost || hostIsDisconnected;
+
+        if (shouldEndRound && canProcess && !isProcessingRef.current) {
+          console.log('🔔 FIREBASE DÉTECTE: Fin du round (réponses ou déconnexion)');
           isProcessingRef.current = true;
           
           console.log('🏆 ========== CALCUL AUTOMATIQUE DES SCORES ==========');
@@ -399,6 +448,121 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     };
   }, [roomCode, myId, gameConfig]);
 
+// Gestion de la connexion/déconnexion
+useEffect(() => {
+  if (!roomCode || !myId || !opponentId || pvpState === 'menu') return;
+
+  const playerRef = ref(database, `pvp_rooms/${roomCode}/players/${myId}`);
+  const opponentRef = ref(database, `pvp_rooms/${roomCode}/players/${opponentId}`);
+
+  // Marquer le joueur comme connecté
+  update(playerRef, {
+    connected: true,
+    lastSeen: Date.now()
+  });
+
+  // Gérer la déconnexion automatique
+  const disconnectRef = onDisconnect(playerRef);
+  disconnectRef.update({
+    connected: false,
+    lastSeen: Date.now()
+  });
+
+  // Surveiller le statut de l'adversaire
+  const unsubscribe = onValue(opponentRef, (snapshot) => {
+    const opponent = snapshot.val();
+    
+    if (!opponent) return;
+
+    if (opponent.connected === false && !opponentDisconnected) {
+      console.log('⚠️ Adversaire déconnecté');
+      setOpponentDisconnected(true);
+      
+      // 🔥 SEULEMENT EN ROUND_END OU WAITING - Timer de 30s avant victoire
+      if (pvpState === 'round_end' || pvpState === 'waiting') {
+        console.log(`🚨 Déconnexion en ${pvpState} - Timer de 30s avant victoire par forfait`);
+        
+        // DÉCOMPTE VISUEL
+        let countdown = 30;
+        setDisconnectionCountdown(countdown);
+        
+        const countdownInterval = setInterval(() => {
+          countdown -= 1;
+          setDisconnectionCountdown(countdown);
+          
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+          }
+        }, 1000);
+        
+        const timer = setTimeout(async () => {
+          console.log('⏰ 30 secondes écoulées - Victoire par forfait');
+          clearInterval(countdownInterval);
+          setDisconnectionCountdown(null);
+          await endGameByDisconnection();
+        }, 30000);
+        
+        setReconnectionTimer(timer);
+      }
+      // 🔥 PENDANT LE JEU - Pas de timer, on attend que le joueur connecté réponde
+      else if (pvpState === 'playing') {
+        console.log('🚨 Déconnexion pendant le round - Aucun timer, attente de la réponse du joueur connecté');
+        // Pas de timer ici, handleSubmitAnswer ou handleTimeOut gérera
+      }
+    } else if (opponent.connected === true && opponentDisconnected) {
+      console.log('✅ Adversaire reconnecté');
+      setOpponentDisconnected(false);
+      setDisconnectionCountdown(null);
+      if (reconnectionTimer) {
+        clearTimeout(reconnectionTimer);
+        setReconnectionTimer(null);
+      }
+    }
+  });
+
+  return () => {
+    unsubscribe();
+    if (reconnectionTimer) {
+      clearTimeout(reconnectionTimer);
+    }
+    disconnectRef.cancel();
+  };
+}, [roomCode, myId, opponentId, pvpState, opponentDisconnected]);
+
+// 🔥 TIMER SPÉCIFIQUE pour round_end avec adversaire déconnecté
+useEffect(() => {
+  if (pvpState !== 'round_end' || !opponentDisconnected) return;
+  
+  console.log('🚨 round_end avec adversaire déconnecté - Démarrage timer 30s');
+  
+  // DÉCOMPTE VISUEL
+  let countdown = 30;
+  setDisconnectionCountdown(countdown);
+  
+  const countdownInterval = setInterval(() => {
+    countdown -= 1;
+    setDisconnectionCountdown(countdown);
+    
+    if (countdown <= 0) {
+      clearInterval(countdownInterval);
+    }
+  }, 1000);
+  
+  const timer = setTimeout(async () => {
+    console.log('⏰ 30 secondes écoulées en round_end - Victoire par forfait');
+    clearInterval(countdownInterval);
+    setDisconnectionCountdown(null);
+    await endGameByDisconnection();
+  }, 30000);
+  
+  setReconnectionTimer(timer);
+  
+  return () => {
+    clearTimeout(timer);
+    clearInterval(countdownInterval);
+  };
+}, [pvpState, opponentDisconnected]);
+
   // Heartbeat
   useEffect(() => {
     if (roomCode && myId && pvpState !== 'menu') {
@@ -443,69 +607,106 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
   }, [pvpState, opponentData?.hasAnswered, opponentData?.answerTime, hasAnswered, isStressed, roomData?.gameConfig?.roundStartTime]);
 
   // TIMER PRINCIPAL
-  useEffect(() => {
-    if (hasAnsweredRef.current || isProcessingRef.current || currentStateRef.current !== 'playing') {
-      console.log('⏹️ Timer ignoré - déjà répondu');
+  // TIMER PRINCIPAL - Continue même après avoir répondu
+useEffect(() => {
+  if (pvpState !== 'playing' || !roomData?.gameConfig?.roundStartTime) return;
+  
+  if (currentStateRef.current === 'round_end' || currentStateRef.current === 'game_end') {
+    return;
+  }
+
+  const roundStartTime = roomData.gameConfig.roundStartTime;
+  
+  console.log('⏱️ Timer démarré');
+  const interval = setInterval(() => {
+    if (currentStateRef.current !== 'playing') {
+      console.log('⏹️ Arrêt du timer - changement d\'état');
+      clearInterval(interval);
       return;
     }
-    
-    if (currentStateRef.current === 'round_end' || currentStateRef.current === 'game_end') {
-      console.log('⏹️ Timer ignoré - partie terminée');
-      return;
-    }
-    
-    if (pvpState !== 'playing' || !roomData?.gameConfig?.roundStartTime) return;
 
-    const roundStartTime = roomData.gameConfig.roundStartTime;
+    const currentTime = Date.now();
+    const elapsedSeconds = (currentTime - roundStartTime) / 1000;
     
-    console.log('⏱️ Timer démarré');
-    const interval = setInterval(() => {
-      if (hasAnsweredRef.current || currentStateRef.current !== 'playing') {
-        console.log('⏹️ Arrêt du timer - réponse détectée ou changement d\'état');
-        clearInterval(interval);
-        return;
-      }
-
-      const currentTime = Date.now();
-      const elapsedSeconds = (currentTime - roundStartTime) / 1000;
-      
-      if (opponentData?.hasAnswered) {
-        const opponentAnswerTime = opponentData.answerTime || 0;
-        const stressDeadline = opponentAnswerTime + 10;
-        const timeLeftInStress = Math.max(0, stressDeadline - elapsedSeconds);
+    // 🔥 LOGIQUE CORRIGÉE
+    const iHaveAnswered = hasAnsweredRef.current || hasAnswered;
+    const opponentHasAnswered = opponentData?.hasAnswered;
+    
+    // 🔥 CAS SPÉCIAL : Adversaire déconnecté
+    if (opponentDisconnected) {
+      // Si je n'ai pas encore répondu, je continue avec le timer normal de 30s
+      if (!iHaveAnswered) {
+        const timeLeftNormal = Math.max(0, 30 - elapsedSeconds);
+        setTimeLeft(Math.ceil(timeLeftNormal));
         
-        setTimeLeft(Math.ceil(timeLeftInStress));
-        
-        if (timeLeftInStress <= 0) {
-          console.log('⏰ TEMPS ÉCOULÉ EN MODE STRESS !');
+        if (timeLeftNormal <= 0) {
+          console.log('⏰ TEMPS ÉCOULÉ (30s) - Adversaire déconnecté !');
           clearInterval(interval);
           handleTimeOut();
           return;
         }
       } else {
-        const timeLeftNormal = Math.max(0, 30 - elapsedSeconds);
-        setTimeLeft(Math.ceil(timeLeftNormal));
-        
-        if (timeLeftNormal <= 0) {
-          console.log('⏰ TEMPS ÉCOULÉ (30s) !');
-          clearInterval(interval);
-          handleTimeOut();
-          return;
-        }
+        // Si j'ai répondu, afficher 0 et attendre le calcul des scores
+        setTimeLeft(0);
       }
-    }, 100);
+      return;
+    }
     
-    timeoutRef.current = interval;
-    
-    return () => {
-      console.log('🧹 Nettoyage du timer');
-      clearInterval(interval);
-      if (timeoutRef.current === interval) {
-        timeoutRef.current = null;
+    // CAS 1 : Personne n'a répondu → 30 secondes normales
+    if (!iHaveAnswered && !opponentHasAnswered) {
+      const timeLeftNormal = Math.max(0, 30 - elapsedSeconds);
+      setTimeLeft(Math.ceil(timeLeftNormal));
+      
+      if (timeLeftNormal <= 0) {
+        console.log('⏰ TEMPS ÉCOULÉ (30s) !');
+        clearInterval(interval);
+        handleTimeOut();
+        return;
       }
-    };
-  }, [pvpState, roomData?.gameConfig?.roundStartTime, roomData?.currentRound, opponentData?.hasAnswered, opponentData?.answerTime]);
-
+    }
+    
+    // CAS 2 : MOI j'ai répondu en premier, adversaire non
+    else if (iHaveAnswered && !opponentHasAnswered) {
+      const myAnswerTime = myData?.answerTime || 0;
+      const opponentDeadline = myAnswerTime + 10;
+      const timeLeftForOpponent = Math.max(0, opponentDeadline - elapsedSeconds);
+      
+      setTimeLeft(Math.ceil(timeLeftForOpponent));
+      // Pas de timeout ici, je ne joue plus
+    }
+    
+    // CAS 3 : ADVERSAIRE a répondu en premier, moi non
+    else if (!iHaveAnswered && opponentHasAnswered) {
+      const opponentAnswerTime = opponentData.answerTime || 0;
+      const myDeadline = opponentAnswerTime + 10;
+      const timeLeftForMe = Math.max(0, myDeadline - elapsedSeconds);
+      
+      setTimeLeft(Math.ceil(timeLeftForMe));
+      
+      if (timeLeftForMe <= 0) {
+        console.log('⏰ TEMPS ÉCOULÉ EN MODE STRESS !');
+        clearInterval(interval);
+        handleTimeOut();
+        return;
+      }
+    }
+    
+    // CAS 4 : Les deux ont répondu
+    else if (iHaveAnswered && opponentHasAnswered) {
+      setTimeLeft(0);
+    }
+  }, 100);
+  
+  timeoutRef.current = interval;
+  
+  return () => {
+    console.log('🧹 Nettoyage du timer');
+    clearInterval(interval);
+    if (timeoutRef.current === interval) {
+      timeoutRef.current = null;
+    }
+  };
+}, [pvpState, roomData?.gameConfig?.roundStartTime, roomData?.currentRound, opponentData?.hasAnswered, opponentData?.answerTime, myData?.answerTime, hasAnswered, opponentDisconnected]);
   // Animation des images
   useEffect(() => {
     if (pvpState !== 'playing' || !gameConfig || hasAnsweredRef.current) return;
@@ -543,6 +744,33 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
       }
     };
   }, [pvpState, gameConfig, roomData?.currentRound, roomData?.gameConfig?.roundStartTime]);
+
+
+// Fonction pour terminer le jeu par déconnexion
+const endGameByDisconnection = async () => {
+  if (!roomCode || !myId) {
+    console.error('❌ Impossible de terminer - pas de roomCode ou myId');
+    return;
+  }
+  
+  console.log('🏆 ========== VICTOIRE PAR FORFAIT ==========');
+  console.log(`Room: ${roomCode}, Winner: ${myId}`);
+  
+  try {
+    const gameRef = ref(database, `pvp_rooms/${roomCode}`);
+    await update(gameRef, {
+      status: 'game_end',
+      winner: myId,
+      endReason: 'opponent_disconnected',
+      endTime: Date.now()
+    });
+    console.log('✅ Firebase mis à jour avec game_end');
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour Firebase:', error);
+  }
+  
+  console.log('🏆 =========================================');
+};
 
   // === HANDLERS ===
 
@@ -626,9 +854,8 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     setHasAnswered(true);
     console.log('🔒 Verrouillage activé');
     
-    stopAllTimers();
     setIsStressed(false);
-    console.log('🧹 Timers nettoyés');
+    console.log('✅ Réponse verrouillée, timer continue');
 
     const currentRound = roomData.currentRound;
     const roundConfig = gameConfig.rounds[currentRound];
@@ -648,38 +875,78 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
 
     await submitAnswer(roomCode, myId, userAnswer, actualTimeElapsed, isCorrect, roundStartTime);
     console.log('✅ Soumis à Firebase');
+    
+    // 🔥 SI L'ADVERSAIRE EST DÉCONNECTÉ, FORCER SA RÉPONSE IMMÉDIATEMENT
+    if (opponentDisconnected && opponentId) {
+      console.log('🚨 Adversaire déconnecté - Forçage de sa réponse immédiate');
+      console.log(`   opponentId: ${opponentId}`);
+      console.log(`   roomCode: ${roomCode}`);
+      
+      // Annuler le timer de 30s si il existe
+      if (reconnectionTimer) {
+        clearTimeout(reconnectionTimer);
+        setReconnectionTimer(null);
+      }
+      setDisconnectionCountdown(null);
+      
+      // Forcer la réponse de l'adversaire
+      const opponentAnswerTime = (Date.now() - roundStartTime) / 1000;
+      console.log(`   Forçage réponse adversaire avec temps: ${opponentAnswerTime.toFixed(2)}s`);
+      
+      await submitAnswer(roomCode, opponentId, '', opponentAnswerTime, false, roundStartTime);
+      console.log('✅ Réponse de l\'adversaire forcée - Firebase devrait détecter les 2 réponses');
+    }
+
     console.log('📝 ========================================');
     console.log('⏳ Le listener Firebase calculera les scores automatiquement...');
   };
 
-  const handleTimeOut = async () => {
-    console.log(`🔍 handleTimeOut appelé - hasAnsweredRef=${hasAnsweredRef.current}, isProcessingRef=${isProcessingRef.current}`);
-    
-    if (hasAnsweredRef.current || isProcessingRef.current) {
-      console.log('⏹️ Timer ignoré - déjà répondu');
-      return;
-    }
+ const handleTimeOut = async () => {
+  console.log(`🔍 handleTimeOut appelé - hasAnsweredRef=${hasAnsweredRef.current}, isProcessingRef=${isProcessingRef.current}`);
   
-    console.log('⏰ ========== TIMEOUT ==========');
+  if (hasAnsweredRef.current || isProcessingRef.current) {
+    console.log('⏹️ Timer ignoré - déjà répondu');
+    return;
+  }
+
+  console.log('⏰ ========== TIMEOUT ==========');
+  
+  hasAnsweredRef.current = true;
+  setHasAnswered(true);
+  console.log('🔒 Verrouillage activé');
+  
+  stopAllTimers();
+  setIsStressed(false);
+  console.log('🧹 Timers nettoyés');
+
+  const roundStartTime = roomData.gameConfig.roundStartTime;
+  const actualTimeElapsed = (Date.now() - roundStartTime) / 1000;
+
+  console.log(`⏱️ Temps: ${actualTimeElapsed.toFixed(2)}s`);
+
+  await submitAnswer(roomCode, myId, '', actualTimeElapsed, false, roundStartTime);
+  console.log('✅ Soumis à Firebase (réponse vide)');
+  
+  // 🔥 SI L'ADVERSAIRE EST DÉCONNECTÉ, FORCER SA RÉPONSE IMMÉDIATEMENT
+  if (opponentDisconnected && opponentId) {
+    console.log('🚨 Adversaire déconnecté - Forçage de sa réponse immédiate');
     
-    hasAnsweredRef.current = true;
-    setHasAnswered(true);
-    console.log('🔒 Verrouillage activé');
+    // Annuler le timer de 30s si il existe
+    if (reconnectionTimer) {
+      clearTimeout(reconnectionTimer);
+      setReconnectionTimer(null);
+    }
+    setDisconnectionCountdown(null);
     
-    stopAllTimers();
-    setIsStressed(false);
-    console.log('🧹 Timers nettoyés');
-
-    const roundStartTime = roomData.gameConfig.roundStartTime;
-    const actualTimeElapsed = (Date.now() - roundStartTime) / 1000;
-
-    console.log(`⏱️ Temps: ${actualTimeElapsed.toFixed(2)}s`);
-
-    await submitAnswer(roomCode, myId, '', actualTimeElapsed, false, roundStartTime);
-    console.log('✅ Soumis à Firebase (réponse vide)');
-    console.log('⏰ ====================================');
-    console.log('⏳ Le listener Firebase calculera les scores automatiquement...');
-  };
+    // Forcer la réponse de l'adversaire
+    const opponentAnswerTime = (Date.now() - roundStartTime) / 1000;
+    await submitAnswer(roomCode, opponentId, '', opponentAnswerTime, false, roundStartTime);
+    console.log('✅ Réponse de l\'adversaire forcée');
+  }
+  
+  console.log('⏰ ====================================');
+  console.log('⏳ Le listener Firebase calculera les scores automatiquement...');
+};
 
   const handleNextRound = async () => {
     if (!roomCode || !myId) return;
@@ -738,7 +1005,13 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
                 placeholder="CODE"
                 value={roomCode}
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && roomCode.trim().length === 5) {
+                    handleJoinPrivateRoom();
+                  }
+                }}
                 maxLength={5}
+                autoFocus
               />
               <button 
                 className="pvp-paste-button" 
@@ -895,14 +1168,35 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
           <div style={{width: '100%', maxWidth: '600px', display: 'flex', alignItems: 'center', marginBottom: '15px', gap: '10px'}}>
             <div style={{flex: 1, height: '20px', backgroundColor: '#333', borderRadius: '10px', overflow: 'hidden'}}>
               <div style={{
-                width: `${(timeLeft / 30) * 100}%`,
+                width: `${(() => {
+                  // 🔥 CALCUL CORRECT DU POURCENTAGE
+                  const iHaveAnswered = hasAnswered;
+                  const opponentHasAnswered = opponentData?.hasAnswered;
+                  
+                  // Si quelqu'un a répondu → mode stress (10s)
+                  if (iHaveAnswered || opponentHasAnswered) {
+                    return (timeLeft / 10) * 100;
+                  }
+                  // Sinon → mode normal (30s)
+                  return (timeLeft / 30) * 100;
+                })()}%`,
                 height: '100%',
-                backgroundColor: isStressed ? '#f44336' : (timeLeft <= 10 ? '#f44336' : timeLeft <= 20 ? '#FF9800' : '#4CAF50'),
+                backgroundColor: (() => {
+                  if (opponentDisconnected) return '#9C27B0'; // Violet pour déconnexion
+                  if (isStressed || hasAnswered || opponentData?.hasAnswered) {
+                    // Mode stress (10s)
+                    return timeLeft <= 3 ? '#f44336' : timeLeft <= 7 ? '#FF9800' : '#4CAF50';
+                  }
+                  // Mode normal (30s)
+                  return timeLeft <= 10 ? '#f44336' : timeLeft <= 20 ? '#FF9800' : '#4CAF50';
+                })(),
                 borderRadius: '10px',
-                transition: 'width 0.1s linear'
+                transition: 'width 0.1s linear, background-color 0.3s ease'
               }}></div>
             </div>
-            <span style={{fontSize: '18px', fontWeight: 'bold', color: '#fff', width: '50px', textAlign: 'right'}}>{timeLeft}s</span>
+            <span style={{fontSize: '18px', fontWeight: 'bold', color: '#fff', width: '50px', textAlign: 'right'}}>
+              {timeLeft}s
+            </span>
           </div>
 
           <div className="imageContainer">
@@ -939,9 +1233,28 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
           </div>
 
           {hasAnswered && (
-            <p style={{color: '#4CAF50', marginTop: '10px', fontWeight: 'bold'}}>
-              ✅ Réponse envoyée ! En attente de l'adversaire...
-            </p>
+            <div style={{
+              backgroundColor: 'rgba(76, 175, 80, 0.2)',
+              border: '2px solid #4CAF50',
+              color: '#4CAF50',
+              padding: '12px',
+              borderRadius: '8px',
+              marginTop: '10px',
+              fontWeight: 'bold',
+              textAlign: 'center'
+            }}>
+              ✅ Réponse envoyée !
+              {!opponentData?.hasAnswered && !opponentDisconnected && (
+                <div style={{marginTop: '8px', fontSize: '14px'}}>
+                  En attente de l'adversaire... ({timeLeft}s restantes)
+                </div>
+              )}
+              {opponentDisconnected && disconnectionCountdown !== null && (
+                <div style={{marginTop: '8px', fontSize: '14px', color: '#FF9800'}}>
+                  Adversaire déconnecté - Fin dans {disconnectionCountdown}s
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -974,16 +1287,37 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
     return (
       <div className="container">
         <div className="roundEndTop">
+          {opponentDisconnected && (  // ✅ AVANT le titre
+            <div style={{
+              backgroundColor: '#FF9800',
+              color: '#fff',
+              padding: '15px',
+              borderRadius: '10px',
+              marginBottom: '20px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              animation: 'pulse 1.5s infinite'
+            }}>
+              ⚠️ Adversaire déconnecté
+              {disconnectionCountdown !== null && (
+                <div style={{fontSize: '24px', marginTop: '8px'}}>
+                  Victoire par forfait dans {disconnectionCountdown}s
+                </div>
+              )}
+            </div>
+          )}
           <h1 className="resultTitle">Round {roundNumber} terminé !</h1>
 
-          <div className="flag">{countryData.flag}</div>
+          <div className="flag">
+            <EmojiText>{countryData.flag}</EmojiText>
+          </div>
           <p className="countryName">{t.countries[correctCountry] || correctCountry}</p>
 
           <div style={{display: 'flex', justifyContent: 'space-around', width: '100%', maxWidth: '600px', marginTop: '30px'}}>
             <div style={{textAlign: 'center', flex: 1, padding: '20px', backgroundColor: frozenMyData?.isCorrect ? '#1b5e20' : '#b71c1c', borderRadius: '10px', margin: '0 10px'}}>
               <p style={{fontWeight: 'bold', fontSize: '18px', marginBottom: '10px'}}>{userPseudo}</p>
               <p style={{fontSize: '16px', marginBottom: '5px'}}>
-                {frozenMyData?.isCorrect ? '✅' : '❌'} {frozenMyData?.answer || '(pas de réponse)'}
+                <EmojiText>{frozenMyData?.isCorrect ? '✅' : '❌'}</EmojiText> {frozenMyData?.answer || '(pas de réponse)'}
               </p>
               <p style={{fontSize: '14px', color: '#ccc', marginBottom: '10px'}}>
                 {myAnswerTime.toFixed(1)}s {myIsFirst && '⚡ BONUS'}
@@ -1010,13 +1344,37 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
           </div>
 
           <div style={{marginTop: '30px'}}>
+            <div style={{display: 'flex', justifyContent: 'center', gap: '40px', marginBottom: '20px'}}>
+              <div style={{textAlign: 'center'}}>
+                <div style={{fontSize: '36px', marginBottom: '8px'}}>
+                  {myData?.ready ? '✅' : '⏳'}
+                </div>
+                <p style={{color: '#fff', fontWeight: 'bold', fontSize: '16px'}}>{userPseudo}</p>
+                <p style={{color: myData?.ready ? '#4CAF50' : '#888', fontSize: '14px'}}>
+                  {myData?.ready ? 'Prêt' : 'En attente...'}
+                </p>
+              </div>
+
+              <div style={{fontSize: '28px', color: '#fff', alignSelf: 'center'}}>VS</div>
+
+              <div style={{textAlign: 'center'}}>
+                <div style={{fontSize: '36px', marginBottom: '8px'}}>
+                  {opponentData?.ready ? '✅' : '⏳'}
+                </div>
+                <p style={{color: '#fff', fontWeight: 'bold', fontSize: '16px'}}>{frozenOpponentData?.pseudo}</p>
+                <p style={{color: opponentData?.ready ? '#4CAF50' : '#888', fontSize: '14px'}}>
+                  {opponentData?.ready ? 'Prêt' : 'En attente...'}
+                </p>
+              </div>
+            </div>
+
             {!myData?.ready ? (
               <button className="button" onClick={handleNextRound}>
                 ROUND SUIVANT
               </button>
             ) : (
-              <p style={{color: '#888'}}>
-                {opponentData?.ready ? 'Démarrage...' : 'En attente de l\'adversaire...'}
+              <p style={{color: '#888', fontSize: '16px'}}>
+                {opponentData?.ready ? '⏳ Démarrage...' : '⏳ En attente de l\'adversaire...'}
               </p>
             )}
           </div>
