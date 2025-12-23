@@ -103,7 +103,7 @@ export const countries = {
     folder: 'england',
     totalImages: 214,
     flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-    names: ['united kingdom', 'royaume-uni', 'royaume uni', 'uk', 'angleterre', 'england'],
+    names: ['royaume-uni', 'royaume uni', 'angleterre', 'england'],
     capital: {
       fr: 'Londres',
       en: 'London'
@@ -280,7 +280,7 @@ export const countries = {
   
   NewZealand: {
     difficulty: 'hard',
-    folder: 'new_zealand',
+    folder: 'new_zeeland',
     totalImages: 120,
     flag: '🇳🇿',
     names: ['new zealand', 'nouvelle-zelande', 'nouvelle zelande'],
@@ -439,7 +439,7 @@ export const countries = {
   },
 
   Belgium: {
-    difficulty: 'hard',
+    difficulty: 'easy',
     folder: 'belgium',
     totalImages: 234,
     flag: '🇧🇪',
@@ -523,7 +523,7 @@ export const countries = {
     folder: 'dubai',
     totalImages: 178,
     flag: '🇦🇪',
-    names: ['dubai', 'emirats arabes unis', 'uae', 'emirats', 'emirat arabes unis', 'emirats arabe unis', 'emirats arabes uni'],
+    names: ['emirats arabes unis', 'uae', 'emirats', 'emirat arabes unis', 'emirats arabe unis', 'emirats arabes uni'],
     capital: {
       fr: 'Dubaï',
       en: 'Dubai'

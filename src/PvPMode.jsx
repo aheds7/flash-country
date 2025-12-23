@@ -147,17 +147,26 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
         const playerIds = Object.keys(data.players);
         const amIHost = data.players[myId]?.isHost;
         
-        // 🔥 VÉRIFIER SI L'ADVERSAIRE EST DÉCONNECTÉ
+        // 🔥 VÉRIFIER SI C'EST LE DERNIER ROUND
+        const isLastRound = (data.currentRound + 1) >= data.maxRounds;
+        
+        if (isLastRound) {
+          // 🔥 DERNIER ROUND - Chaque joueur va aux résultats indépendamment via le bouton
+          console.log('📊 Dernier round - En attente de la décision des joueurs (pas de synchronisation)');
+          // Ne rien faire ici, le bouton "VOIR LES RÉSULTATS" appelle directement endGame()
+          return;
+        }
+        
+        // 🔥 ROUNDS INTERMÉDIAIRES - Logique normale
         const opponentPlayer = players.find(p => Object.keys(data.players).find(id => id !== myId && data.players[id] === p));
         const opponentIsDisconnected = opponentPlayer && opponentPlayer.connected === false;
         
-        // 🔥 Si l'hôte est déconnecté, le joueur connecté prend le relais
+        // Si l'hôte est déconnecté, le joueur connecté prend le relais
         const hostIsDisconnected = opponentIsDisconnected && players.find(p => p.isHost)?.connected === false;
         const canProcess = amIHost || hostIsDisconnected;
         
         if (opponentIsDisconnected && canProcess) {
           console.log('⚠️ Adversaire déconnecté en round_end - Timer de 30s géré par useEffect');
-          // Le timer de déconnexion dans le useEffect gère déjà ça
         } else {
           // Logique normale : attendre que les 2 soient prêts
           const bothReady = players.length === 2 && players.every(p => p.ready);
@@ -166,25 +175,20 @@ const PvPMode = ({ user, userPseudo, onBack, translations, language }) => {
             console.log('✅ Les 2 joueurs sont prêts pour le round suivant !');
             const nextRound = data.currentRound + 1;
             
-            if (nextRound >= data.maxRounds) {
-              console.log('🏁 Partie terminée !');
-              await endGame(roomCode);
-            } else {
-              console.log(`🔄 Passage au round ${nextRound + 1}`);
-              
-              // 🔥 RÉINITIALISER ready POUR TOUS LES JOUEURS
-              const updates = {
-                status: 'countdown',
-                countdown: 3,
-                currentRound: nextRound
-              };
-              
-              playerIds.forEach(pid => {
-                updates[`players/${pid}/ready`] = false;
-              });
-              
-              await update(ref(database, `pvp_rooms/${roomCode}`), updates);
-            }
+            console.log(`🔄 Passage au round ${nextRound + 1}`);
+            
+            // 🔥 RÉINITIALISER ready POUR TOUS LES JOUEURS
+            const updates = {
+              status: 'countdown',
+              countdown: 3,
+              currentRound: nextRound
+            };
+            
+            playerIds.forEach(pid => {
+              updates[`players/${pid}/ready`] = false;
+            });
+            
+            await update(ref(database, `pvp_rooms/${roomCode}`), updates);
           }
         }
       }
@@ -771,6 +775,41 @@ const endGameByDisconnection = async () => {
   
   console.log('🏆 =========================================');
 };
+
+// Touche Enter pour "ROUND SUIVANT"
+useEffect(() => {
+  if (pvpState !== 'round_end' || myData?.ready) return;
+  
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleNextRound();
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyPress);
+  
+  return () => {
+    window.removeEventListener('keydown', handleKeyPress);
+  };
+}, [pvpState, myData?.ready, roomCode, myId]);
+
+useEffect(() => {
+  if (pvpState !== 'waiting' || !opponentData || myData?.ready) return;
+  
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleReady();
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyPress);
+  
+  return () => {
+    window.removeEventListener('keydown', handleKeyPress);
+  };
+}, [pvpState, opponentData, myData?.ready, roomCode, myId, gameConfig, roomData?.seed]);
+
+
 
   // === HANDLERS ===
 
@@ -1368,15 +1407,48 @@ const endGameByDisconnection = async () => {
               </div>
             </div>
 
-            {!myData?.ready ? (
-              <button className="button" onClick={handleNextRound}>
-                ROUND SUIVANT
-              </button>
-            ) : (
-              <p style={{color: '#888', fontSize: '16px'}}>
-                {opponentData?.ready ? '⏳ Démarrage...' : '⏳ En attente de l\'adversaire...'}
-              </p>
-            )}
+            {/* 🔥 VÉRIFIER SI C'EST LE DERNIER ROUND */}
+            {(() => {
+              const isLastRound = (roomData?.currentRound + 1) >= (roomData?.maxRounds || 5);
+              
+              if (isLastRound) {
+                // Dernier round - Bouton direct vers les résultats (LOCAL, pas Firebase)
+                return (
+                  <button 
+                    className="button" 
+                    onClick={() => {
+                      console.log('🏁 Dernier round - Passage LOCAL aux résultats finaux');
+                      
+                      // 🔥 CAPTURER LES DONNÉES FINALES MAINTENANT
+                      setGameEndData({
+                        myScore: frozenMyData?.score || 0,
+                        myPseudo: userPseudo,
+                        opponentScore: frozenOpponentData?.score || 0,
+                        opponentPseudo: frozenOpponentData?.pseudo || 'Adversaire'
+                      });
+                      
+                      // 🔥 CHANGEMENT LOCAL uniquement
+                      currentStateRef.current = 'game_end';
+                      setPvpState('game_end');
+                      stopAllTimers();
+                    }}
+                  >
+                    VOIR LES RÉSULTATS
+                  </button>
+                );
+              } else {
+                // Round normal - Attendre que les 2 soient prêts
+                return !myData?.ready ? (
+                  <button className="button" onClick={handleNextRound}>
+                    ROUND SUIVANT
+                  </button>
+                ) : (
+                  <p style={{color: '#888', fontSize: '16px'}}>
+                    {opponentData?.ready ? '⏳ Démarrage...' : '⏳ En attente de l\'adversaire...'}
+                  </p>
+                );
+              }
+            })()}
           </div>
         </div>
 
@@ -1403,20 +1475,32 @@ const endGameByDisconnection = async () => {
         <div style={{display: 'flex', justifyContent: 'center', gap: '50px', marginTop: '40px'}}>
           <div style={{textAlign: 'center'}}>
             <div style={{fontSize: '72px', marginBottom: '10px'}}>
-              {iWon ? '🥇' : isDraw ? '🤝' : '🥈'}
+              <EmojiText>{iWon ? '🥇' : isDraw ? '🤝' : '🥈'}</EmojiText>
             </div>
             <p style={{color: '#fff', fontWeight: 'bold', fontSize: '24px'}}>{myPseudo}</p>
-            <p style={{color: '#4CAF50', fontSize: '48px', fontWeight: 'bold'}}>{myScore}</p>
+            <p style={{
+              color: isDraw ? '#FF9800' : (iWon ? '#4CAF50' : '#f44336'),
+              fontSize: '48px', 
+              fontWeight: 'bold'
+            }}>
+              {myScore}
+            </p>
           </div>
 
           <div style={{fontSize: '48px', color: '#fff', alignSelf: 'center'}}>-</div>
 
           <div style={{textAlign: 'center'}}>
             <div style={{fontSize: '72px', marginBottom: '10px'}}>
-              {!iWon && !isDraw ? '🥇' : isDraw ? '🤝' : '🥈'}
+              <EmojiText>{!iWon && !isDraw ? '🥇' : isDraw ? '🤝' : '🥈'}</EmojiText>
             </div>
             <p style={{color: '#fff', fontWeight: 'bold', fontSize: '24px'}}>{opponentPseudo}</p>
-            <p style={{color: '#f44336', fontSize: '48px', fontWeight: 'bold'}}>{opponentScore}</p>
+            <p style={{
+              color: isDraw ? '#FF9800' : (!iWon && !isDraw ? '#4CAF50' : '#f44336'),
+              fontSize: '48px', 
+              fontWeight: 'bold'
+            }}>
+              {opponentScore}
+            </p>
           </div>
         </div>
 

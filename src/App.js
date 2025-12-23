@@ -39,7 +39,7 @@ const translations = {
       Egypt: 'Égypte', 
       Morocco: 'Maroc', 
       SouthAfrica: 'Afrique du Sud', 
-      NewZeeland: 'Nouvelle-Zélande', 
+      NewZealand: 'Nouvelle-Zélande', 
       Russia: 'Russie', 
       Greece: 'Grèce',
       Austria: 'Autriche',
@@ -215,6 +215,23 @@ function App() {
       }, 50);
     }
   }, [gameState]);
+
+  // Touche Enter pour "ROUND SUIVANT" en mode solo
+  useEffect(() => {
+    if (gameState !== 'roundEnd') return;
+    
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter') {
+        nextRound();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [gameState, currentRound, maxRounds]);
 
   // 🔥 QUAND LES IMAGES SONT CHARGÉES ET QUE LE COUNTDOWN EST FINI, DÉMARRER LE JEU
   useEffect(() => {
@@ -429,13 +446,13 @@ function App() {
               className={`langButton ${language === 'fr' ? 'active' : ''}`} 
               onClick={() => setLanguage('fr')}
             >
-              <span>🇫🇷 FR</span>
+              <EmojiText>🇫🇷</EmojiText> FR
             </button>
             <button 
               className={`langButton ${language === 'en' ? 'active' : ''}`} 
               onClick={() => setLanguage('en')}
             >
-              <span>🇬🇧 EN</span>
+              <EmojiText>🇬🇧</EmojiText> EN
             </button>
           </div>
 

@@ -10,8 +10,8 @@ export const parseEmojis = (text) => {
   
   return twemoji.parse(text, {
     folder: 'svg',
-    ext: '.svg',
-    base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/'
+    ext: '.svg'
+    // Pas de base - utilise le CDN par défaut de twemoji
   });
 };
 
